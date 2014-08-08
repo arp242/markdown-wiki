@@ -1,0 +1,3 @@
+syntax: glob
+*.markdown
+.sass-cache
