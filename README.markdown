@@ -1,11 +1,10 @@
-Really simple document system.
+**markdown-web** or **mdweb** is a simple wiki-like system.
 
-- Documents are written in markdown (markdown parser used is
-  [kramdown][kramdown])
+- Documents are written in markdown;
 - All documents are stored on the filesystem, you can edit them through the
-  webinterface, or directly on the filesystem.
-- Version is tracked with a VCS; curently `hg` and `git` are supported.
-- It's just ~400 lines of code. Simple. Just works™
+  webinterface, or directly on the filesystem;
+- Version is tracked with a VCS; curently `hg` and `git` are supported;
+- It's just ~400 lines of code. Simple. Just works™.
 
 The author of the program uses it to keep track of TODO lists, recipes, personal
 documentation/cheatsheets on various things... You can use it for anything,
@@ -16,9 +15,9 @@ Installation
 ------------
 - Install dependencies with  [bundler][bundler]:
 
-      bundle install
+        bundle install
 
-- You can optionally configure some settings on `config.rb`
+- You can optionally configure some settings in `config.rb`
 
 - You will need to initialize a `user` file and a VCS repository in `data/`;
   running `./install.rb` is the easiest way to initialize a repo; you can add
@@ -26,11 +25,11 @@ Installation
 
 - Start it:
 
-     ./mdweb.rb
+        ./mdweb.rb
 
   Or with a port number:
 
-	 ./mdweb.rb -p 4568
+        ./mdweb.rb -p 4568
 
 
 Markdown flavour
@@ -40,7 +39,7 @@ Markdown flavour
 
 Changelog
 ---------
-1.0 version it to-be-released.
+1.0 version is to-be-released.
 
 
 
