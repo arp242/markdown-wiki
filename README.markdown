@@ -13,9 +13,7 @@ really.
 
 Installation
 ------------
-- Install dependencies with  [bundler][bundler]:
-
-        bundle install
+- Install dependencies with  [bundler][bundler]: `bundle install`
 
 - You can optionally configure some settings in `config.rb`
 
@@ -23,13 +21,7 @@ Installation
   running `./install.rb` is the easiest way to initialize a repo; you can add
   users with `./adduser.rb`
 
-- Start it:
-
-        ./mdweb.rb
-
-  Or with a port number:
-
-        ./mdweb.rb -p 4568
+- Start it with: `./mdweb.rb`, or with a port number: `./mdweb.rb -p 4568`
 
 
 Markdown flavour
