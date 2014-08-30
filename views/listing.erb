@@ -13,9 +13,15 @@
 <% end %>
 
 <ul class="listing">
-	<% listing.each do |f| %>
-		<li class="<% if f[0] %>dir<% end %>">
-			<a href="<%= e f[1] %>"><%= e path_or_uri_to_title(f[1]) %></a>
+	<% listing.each do |dir, files| %>
+		<li>
+			<a class="dir" href="<%= e dir %>"><%= e path_or_uri_to_title(dir) %></a>
+			
+			<ul>
+				<% files.each do |f| %>
+					<li><a href="<%= e f %>"><%= e path_or_uri_to_title(f) %></a></li>
+				<% end %>
+			</ul>
 		</li>
 	<% end %>
 </ul>
@@ -31,9 +37,8 @@
 		in
 		<select name="dir">
 			<option value="<%= e uri %>">current directory</option>
-			<% listing.each do |f| %>
-				<% next unless f[0] %>
-				<option value="<%= e f[1] %>"><%= e f[1] %></option>
+			<% listing.each do |dir, files| %>
+				<option value="<%= e dir %>"><%= e dir %></option>
 			<% end %>
 		</select>
 		named

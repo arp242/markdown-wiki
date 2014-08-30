@@ -43,26 +43,29 @@ a
 
 ul.listing
 	padding-left: 0
+	ul
+		padding-left: 0
 
 	li
 		list-style: none
-		padding-left: 2em
+		padding-left: 0
+
+		a
+			display: block
+
+			&:hover
+				background-color: #fff58f
+				text-decoration: none
+
+		ul li a
+			padding-left: 2em
+
 
 	.dir
 		display: inline-block
 		margin-top: 1em
 		font-weight: bold
 		width: 100%
-		padding-left: 0
-
-		button, input
-			padding: .2em
-			line-height: 1.2em
-
-		&:hover
-			.new-file
-				display: inline
-
 
 li
 	margin-bottom: .2em

@@ -23,20 +23,23 @@ a {
 
 ul.listing {
   padding-left: 0; }
+  ul.listing ul {
+    padding-left: 0; }
   ul.listing li {
     list-style: none;
-    padding-left: 2em; }
+    padding-left: 0; }
+    ul.listing li a {
+      display: block; }
+      ul.listing li a:hover {
+        background-color: #fff58f;
+        text-decoration: none; }
+    ul.listing li ul li a {
+      padding-left: 2em; }
   ul.listing .dir {
     display: inline-block;
     margin-top: 1em;
     font-weight: bold;
-    width: 100%;
-    padding-left: 0; }
-    ul.listing .dir button, ul.listing .dir input {
-      padding: 0.2em;
-      line-height: 1.2em; }
-    ul.listing .dir:hover .new-file {
-      display: inline; }
+    width: 100%; }
 
 li {
   margin-bottom: 0.2em; }

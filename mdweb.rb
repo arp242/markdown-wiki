@@ -7,8 +7,8 @@
 # See below for full copyright
 #
 # TODO: 
-# - Fix listing indent
-# - Detect links
+# - Detect links, and possibly other pagedown preview stuff
+# - Write a bunch of tests
 #
 
 
@@ -59,8 +59,8 @@ end
 
 
 get '/*.markdown.log' do
-	@path = @path.sub '\.log$', ''
-	erb :log, locals: { path: @path, uri: @uri, title: @title, log: VCS.log(@path) }
+	@path = @path.sub(/\.log$/, '')
+	erb :log, locals: { path: @path, uri: @uri, title: @title, log: VCS.log(@uri.sub(/\.log$/, '')) }
 end
 
 
@@ -117,14 +117,14 @@ put '/*' do
 	if params[:type] == 'file'
 		new += '.markdown' unless new.end_with? '.markdown'
 
-		if File.exists? "./data/#{new}"
+		if File.exists? "#{PATH_DATA}/#{new}"
 			flash 'File already exists; here it is', :error
 		else
-			FileUtils.touch "./data/#{new}"
+			FileUtils.touch "#{PATH_DATA}/#{new}"
 		end
 		redirect new
 	else
-		FileUtils.mkdir_p "./data/#{new}"
+		FileUtils.mkdir_p "#{PATH_DATA}/#{new}"
 		redirect new
 	end
 end

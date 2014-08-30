@@ -22,6 +22,16 @@ class Vcs
 	#def commit user; end
 
 	# Show logs
+	# We expect the return value to be like:
+	# [
+	#   {
+	#     id: Some sort of uniq id for this revision (changeset, commit hash, #     etc.)
+	#     diff: text of the diff
+	#   },
+	#   {
+	#     ...
+	#   }
+	# ]
 	#def log path, limit; end
 	
 
@@ -74,7 +84,7 @@ class Hg < Vcs
 					cur[:diff].strip!
 					ret << cur
 				end
-				cur = { changeset: line.split(':')[1..-1].join(':'), diff: '' }
+				cur = { id: line.split(':')[1..-1].join(':'), diff: '' }
 			end
 
 			cur[:diff] += "#{line}\n"
@@ -111,11 +121,30 @@ class Git < Vcs
 
 	def commit user
 		run 'git add -A'
-		run "git commit -m '{commit_message}' --author 'A U #{user} <#{user}@example.com>'"
+		run "git commit -m '#{commit_message}' --author 'A U #{user} <#{user}@example.com>'"
 	end
 
 
 	def log path, limit=20
-		#log = run "hg log -pl#{limit} #{path}"
+		p "git log -p -l#{limit} -- #{path}"
+		log = run "git log -p -l#{limit} -- #{path}"
+
+		p log
+
+		ret = []
+		cur = nil
+		log.split("\n").each do |line|
+			if line.start_with?('commit ')
+				unless cur.nil?
+					cur[:diff].strip!
+					ret << cur
+				end
+				cur = { id: line.split(' ')[1..-1].join(' '), diff: '' }
+			end
+
+			cur[:diff] += "#{line}\n"
+		end
+
+		return ret
 	end
 end
