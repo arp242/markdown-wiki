@@ -1,21 +1,121 @@
+require 'fileutils'
+
 class Vcs
 	def commit_message
 		Time.now.to_s
 	end
+
+
+	# Is this VCS present on the system?
+	#def on_system?; end
+
+	# Human readable name
+	#def name; end
+
+	# Check if a repo is present in path
+	#def present? path; end
+
+	# Init a new repo
+	#def init; end
+
+	# commit a repo with the username user
+	#def commit user; end
+
+	# Show logs
+	#def log path, limit; end
+	
+
+	private
+
+		def run cmd
+			`cd #{PATH_DATA} && #{cmd}`
+		end
 end
 
 
 class Hg < Vcs
-	def commit
-		`cd data && hg add`
-		`cd data && hg ci -m '#{commit_message}'`
+	def on_system?
+		`which hg > /dev/null 2>&1`
+		return $?.exitstatus == 0
+	end
+
+
+	def name
+		'Mercurial'
+	end
+
+
+	def present? path
+		# TODO: This can be better
+		File.exists? "#{path}/.hg"
+	end
+
+
+	def init
+		FileUtils.mkdir_p PATH_DATA
+		run 'hg init'
+	end
+
+
+	def commit user
+		run 'hg addremove'
+		run "hg ci -m '#{commit_message}' -u '#{user}'"
+	end
+
+
+	def log path, limit=20
+		log = run "hg log -pl#{limit} #{path}"
+
+		ret = []
+		cur = nil
+		log.split("\n").each do |line|
+			if line.start_with?('changeset:')
+				unless cur.nil?
+					cur[:diff].strip!
+					ret << cur
+				end
+				cur = { changeset: line.split(':')[1..-1].join(':'), diff: '' }
+			end
+
+			cur[:diff] += "#{line}\n"
+		end
+
+		return ret
 	end
 end
 
 
 class Git < Vcs
-	def commit
-		`git add -A`
-		`git commit -m #{commit_message}'`
+	def on_system?
+		`which git > /dev/null 2>&1`
+		return $?.exitstatus == 0
+	end
+
+
+	def name
+		'Git'
+	end
+
+
+	def present? path
+		# TODO: This can be better
+		File.exists? "#{path}/.git"
+	end
+
+
+	def init
+		FileUtils.mkdir_p PATH_DATA
+		run 'git init'
+	end
+
+
+	def commit user
+		run 'git add -A'
+		run "git commit -m '{commit_message}' --author 'A U #{user} <#{user}@example.com>'"
+	end
+
+
+	def log path, limit=20
+		#log = run "hg log -pl#{limit} #{path}"
 	end
 end

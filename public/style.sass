@@ -1,0 +1,228 @@
+$link_color: #3333ff
+
+
+@mixin gradient-vertical($start-color: #555, $end-color: #333, $start-percent: 0%, $end-percent: 100%)
+	// Safari 5.1-6, Chrome 10+
+	background-image: -webkit-linear-gradient(top, $start-color $start-percent, $end-color $end-percent)
+
+	// Standard, IE10, Firefox 16+, Opera 12.10+, Safari 7+, Chrome 26+
+	background-image: linear-gradient(to bottom, $start-color $start-percent, $end-color $end-percent)
+	background-repeat: repeat-x
+
+	// IE9 and down
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}', GradientType=0)
+
+// Fix syntax highlight...
+// '
+
+
+body
+	max-width: 60em
+	margin-top: 1em
+	margin-left: 1em
+	font-family: 'DejaVu Sans Serif', Arial, sans-serif
+	font-size: 14px
+	line-height: 1.5em
+
+a
+	text-decoration: none
+	color: $link_color
+
+	&:visited
+		color: $link_color
+
+	&:hover
+		color: darken($link_color, 30%)
+		text-decoration: underline
+
+#wmd-preview, #page
+	margin-bottom: 5em
+
+#wmd-preview
+	display: none
+
+ul.listing
+	padding-left: 0
+
+	li
+		list-style: none
+		padding-left: 2em
+
+	.dir
+		display: inline-block
+		margin-top: 1em
+		font-weight: bold
+		width: 100%
+		padding-left: 0
+
+		button, input
+			padding: .2em
+			line-height: 1.2em
+
+		&:hover
+			.new-file
+				display: inline
+
+
+li
+	margin-bottom: .2em
+
+h1
+	border-bottom: 1px solid #ddd
+	padding-bottom: .5em
+	margin-bottom: .5em
+
+textarea, input, select
+	border: 1px solid #ccc
+	border-radius: 2px
+	font-size: 14px
+
+select
+	background-color: #fff
+	color: #000
+
+textarea
+	width: 98.4%
+	height: 30em
+	padding: .5em
+	margin-top: -1px
+
+.resize-handle
+	background-color: #eee
+	border-left: 1px solid #ddd
+	border-right: 1px solid #ddd
+	//text-align: center
+	cursor: ns-resize
+	padding: .2em 0
+	margin-right: -1px
+
+	hr
+		height: 0px
+		margin: .1em auto
+		border: none
+		width: 10%
+		border-top: 1px solid #ccc
+
+.save-button
+	margin-right: -1px
+
+button
+	padding: .5em
+	cursor: pointer
+
+.markdown button
+	width: 100%
+
+.create-new
+	margin-top: 2em
+
+	button, input
+		padding: .2em
+		line-height: 1.4em
+
+code
+	white-space: pre-wrap
+	border-radius: 2px
+	background-color: #eee
+	padding: .2em
+
+pre
+	margin-bottom: 1em
+	max-height: 40em
+	width: auto
+	overflow: auto
+	background-color: #eee
+	padding: .5em
+	border-radius: 2px
+	border: 1px solid #ddd
+
+	code
+		white-space: inherit
+
+.flash
+	margin-top: 1em
+	font-weight: bold
+
+	&.success
+		//background-color: #d0ffd0
+		@include gradient-vertical(#d0ffd0, #b0ffb0)
+	&.error
+		//background-color: #ffd0d0
+		@include gradient-vertical(#ffd0d0, #ffb0b0)
+
+.log-entry
+	margin: 1em 0
+
+	pre
+		border: none
+		padding: 0
+		margin: 0
+		background-color: transparent
+
+.buttons
+	float: right
+
+	form
+		display: inline
+
+	button, a
+		//display: inline
+		margin-right: .2em
+
+
+.btn
+	font-size: 14px
+	@include gradient-vertical(#eee, #ddd)
+	color: #000
+	padding: .5em
+	cursor: pointer
+	border: 1px solid #ccc
+	border-radius: 2px
+	display: inline-block
+	box-shadow: 0 0 2px rgba(0, 0, 0, .1)
+
+	&:hover
+		text-decoration: none
+		@include gradient-vertical(#e6e6e6, #d6d6d6)
+
+	&:active, &:visited
+		color: #000
+
+
+.box
+	@include gradient-vertical(#f9f9f9, #eee)
+	border: 1px solid #ddd
+	padding: .5em
+	border-radius: 2px
+	box-shadow: 0 0 2px rgba(0, 0, 0, .1)
+
+#wmd-button-bar
+	float: left
+
+#show-preview
+	float: right
+	margin-bottom: -1px
+	margin-right: -2px
+
+.remove-dir
+	float: right
+	button
+		padding: 3px .5em
+
+
+// All this nonsense solves webkit issue where the remove-dir button is
+// *sometimes* in the wrong position
+#crumb
+	.crumb-path
+		float: left
+
+	.remove-dir button
+		margin-bottom: -4px
+		margin-top: -4px
+
+	&:after
+		content: " "
+		display: block
+		height: 0
+		clear: both
+		visibility: hidden

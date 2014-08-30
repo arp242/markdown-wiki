@@ -1,8 +1,13 @@
 <% unless Dir.exists? path %>
 	<div>
-		This directory doesn't exist yet;
+		<p>
+			This directory doesn't exist yet;
+		</p>
 		<form method="post">
-			<button>Make it</button>
+			<input type="hidden" name="_method" value="put">
+			<input type="hidden" name="type" value="dir">
+			<input type="hidden" name="dir" value="<%= e uri %>">
+			<button class="btn">Make it</button>
 		</form>
 	</div>
 <% end %>
@@ -10,23 +15,29 @@
 <ul class="listing">
 	<% listing.each do |f| %>
 		<li class="<% if f[0] %>dir<% end %>">
-			<a href="<%= e f[1] %>"><%= path_to_title f[1] %></a>
-			<% if f[0] %>
-				<form method="post" class="new-file">
-					<input type="hidden" name="dir" value="<%= e f[1] %>">
-					<input type="text" name="new_file">
-					<button>make new file</button>
-				</form>
-			<% end %>
+			<a href="<%= e f[1] %>"><%= e path_or_uri_to_title(f[1]) %></a>
 		</li>
 	<% end %>
 </ul>
 
 <% if Dir.exists? path %>
-	<br>
-	<form method="post" class="new-file">
-		<input type="hidden" name="dir" value="<%= e path.sub(/\.\/data/, '') %>">
-		<input type="text" name="new_file">
-		<button>make new file in current directory</button>
+	<form method="post" class="box create-new">
+		<input type="hidden" name="_method" value="put">
+		Create new
+		<select name="type">
+			<option value="file">file</option>
+			<option value="dir">directory</option>
+		</select>
+		in
+		<select name="dir">
+			<option value="<%= e uri %>">current directory</option>
+			<% listing.each do |f| %>
+				<% next unless f[0] %>
+				<option value="<%= e f[1] %>"><%= e f[1] %></option>
+			<% end %>
+		</select>
+		named
+		<input type="text" name="name">
+		<button class="btn">Make it so!</button>
 	</form>
 <% end %>

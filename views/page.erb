@@ -1,0 +1,39 @@
+<h1><%= e path_or_uri_to_title(File.basename(path)) %></h1>
+
+<div class="buttons">
+	<% if File.exists? path %>
+		<form method="post" class="remove-page">
+			<input type="hidden" name="_method" value="delete">
+			<button class="btn">rm</button>
+		</form>
+		
+		<a class="btn" href="<%= e uri %>.log">log</a>
+	<% end %>
+</div>
+
+<div id="page"><%= html %></div>
+<div id="wmd-preview"><%= html %></div>
+
+<form method='post' class="markdown">
+	<div id="wmd-button-bar"></div>
+	<div id="show-preview" class="btn">Enable preview</div>
+	<textarea name="content" id="wmd-input"><%= e markdown %></textarea>
+	<div class="resize-handle"><hr><hr><hr></div>
+	<button class="btn save-button">
+		<% if File.exists? path %>
+			Save
+		<% else %>
+			Create
+		<% end %>
+	</button>
+</form>
+
+<link rel="stylesheet" href="/contrib/pagedown/demo/browser/demo.css">
+<script src="/contrib/pagedown/Markdown.Converter.js"></script>
+<script src="/contrib/pagedown/Markdown.Sanitizer.js"></script>
+<script src="/contrib/pagedown/Markdown.Editor.js"></script>
+<script>
+	var converter = Markdown.getSanitizingConverter()
+	var editor = new Markdown.Editor(converter)
+	editor.run()
+</script>

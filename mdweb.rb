@@ -1,118 +1,132 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 #
 # http://code.arp242.net/markdown-web
 #
 # Copyright © 2014 Martin Tournoij <martin@arp242.net>
 # See below for full copyright
+#
+# TODO: 
+# - Fix listing indent
+# - Detect links
+#
 
 
 require 'kramdown'
 require 'sinatra'
 
+require './helpers.rb'
 require './vcs.rb'
+require './config.rb'
 
 
-ROOT = "#{File.realpath(File.dirname($0))}/data"
-VCS = Hg.new
-auth = File.open('credentials').read().chomp.split ':::'
-use(Rack::Auth::Basic, 'Restricted Area') { |u, p| u == auth[0] && p == auth[1] }
+enable :sessions
+set :session_secret, SESSION_SECRET
 
-
-def get_listing path
-	Dir["#{path}/**/*"].sort.map { |f| [File.directory?(f), File.realpath(f).sub(/^#{ROOT}/, '')] }
+users = read_users
+use(Rack::Auth::Basic, 'Restricted Area') do |u, p|
+	BCrypt::Password.new(users[u]) == p if defined? users[u]
 end
 
 
-def path_to_title path
-	e(path
-		.sub(/^.\/data/, '')
-		.sub(/\.markdown$/, '')
-		.gsub('_', ' ')
-	)
+before('/*.markdown') do
+	@uri = "#{params[:splat].join '/'}.markdown"
+	@path = "#{PATH_DATA}/#{@uri}"
+	@title = path_or_uri_to_title @uri
 end
 
-
-def safe_path path
-	path = File.realdirpath path
-	raise "Permission denied to `#{path}', it's outside of `#{ROOT}'" unless path.start_with? ROOT
-
-	return './data/' + path.sub(/^#{ROOT}/, '')
-end
-
-
-def e str
-	Rack::Utils.escape_html str.to_s
-end
-
-
-get '/' do
-	erb :listing, locals: { path: './', listing: get_listing('./data') }
+before('/*') do
+	@uri = "#{params[:splat].join '/'}"
+	@path = "#{PATH_DATA}/#{@uri}"
+	@title = path_or_uri_to_title @uri
 end
 
 
 get '/*.markdown' do
-	path = params[:splat].join('/')
-	path = safe_path "./data/#{path}.markdown"
-
-	if File.exists? "#{path}"
-		markdown = File.open("#{path}", 'r').read
+	markdown = ''
+	html = ''
+	if File.exists? @path
+		markdown = File.open(@path, 'r').read
 		html = Kramdown::Document.new(markdown).to_html
-	else
-		markdown = ''
-		html = "Page doesn't exist yet"
+		# Remove trailing newline from <pre>
+		html = html.gsub(/\n<\/code><\/pre>/, '</code></pre>')
+
+		# TODO: Detect links
 	end
 
-	erb :view, locals: { path: path, markdown: markdown, html: html }
+	erb :page, locals: { path: @path, uri: @uri, title: @title, markdown: markdown, html: html }
 end
 
 
-get '/*' do
-	path = params[:splat].join '/'
-
-	if path == 'style.css'
-		headers 'Content-Type' => 'text/css'
-		return File.open('style.css').read()
-	end
-
-	if path == 'favicon.ico'
-		headers 'Content-Type' => 'image/x-icon'
-		return File.open('favicon.ico').read()
-	end
-
-	path = safe_path "./data/#{path}"
-	return erb :listing, locals: { path: path, listing: get_listing(path) }
+get '/*.markdown.log' do
+	@path = @path.sub '\.log$', ''
+	erb :log, locals: { path: @path, uri: @uri, title: @title, log: VCS.log(@path) }
 end
 
 
 post '/*.markdown' do
-	path = safe_path "./data/#{params[:splat].join '/'}.markdown"
-
-	dir = File.dirname path
-	FileUtils.mkdir_p dir unless dir
-
-	File.open(path, 'w+') do |fp|
+	File.open(@path, 'w+') do |fp|
 		fp.write params['content'].gsub "\r\n", "\n"
 		fp.write "\n" unless params['content'].end_with? "\n"
 	end
 
-	VCS.commit
-	redirect path.sub(/^\.\/data\/?/, '')
+	VCS.commit current_user
+	flash 'File saved'
+	redirect @uri
 end
 
 
-post '/*' do
-	if params[:new_file]
-		path = safe_path "./data/#{params[:dir]}/#{params[:new_file]}"
-		path += '.markdown' unless path.end_with? '.markdown'
-		path = safe_path path
-		print "================ #{path} =========="
-		FileUtils.touch path
-		return redirect path.sub(/^\.\/data\/?/, '')
+delete '/*.markdown' do
+	File.unlink @path
+
+	VCS.commit current_user
+	flash "Page ‘#{@title}’ deleted"
+	redirect '/'
+end
+
+
+delete '/*' do
+	begin
+		Dir.rmdir @path
+		flash "Directoy ‘#{@title}’ removed"
+		redirect '/'
+	rescue Errno::ENOTEMPTY
+		flash "Directory ‘#{@title}’ is not empty", :error
+		redirect @uri
+	end
+end
+
+
+get '/*' do
+	return erb :listing, locals: { path: @path, uri: @uri, title: @title, listing: get_listing(@path) }
+end
+
+
+put '/*' do
+	params[:dir].strip!
+	params[:name].strip!
+
+	if params[:name] == ''
+		flash 'Filename is empty', :error
+		# TODO: Don't rely on referrer
+		redirect request.env['HTTP_REFERER'] || '/'
 	end
 
-	path = safe_path "./data/#{params[:splat].join '/'}"
-	FileUtils.mkdir_p path
-	redirect path.sub(/^\.\/data\/?/, '')
+	new = "#{params[:dir]}/#{params[:name]}"
+
+	if params[:type] == 'file'
+		new += '.markdown' unless new.end_with? '.markdown'
+
+		if File.exists? "./data/#{new}"
+			flash 'File already exists; here it is', :error
+		else
+			FileUtils.touch "./data/#{new}"
+		end
+		redirect new
+	else
+		FileUtils.mkdir_p "./data/#{new}"
+		redirect new
+	end
 end
 
 

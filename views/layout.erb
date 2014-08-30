@@ -2,20 +2,35 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>mdweb: <%= path_to_title path %></title>
+		<title>mdweb: <%= e @title %></title>
 		<link rel="stylesheet" href="/style.css">
 	</head>
 
 	<body>
-		<% path = path.sub('./data', '').split('/').reject { |p| p == '' || p == '.' } %>
-		<div id="crumb">
-			<a href="/">[root]</a>
-			<% path.each_with_index do |p, i| %>
-				/
-				<%= "<a href='/#{e path[0..i].join('/')}'>#{e p}</a>" %>
+		<% crumb = uri.split('/').reject { |p| p == '' || p == '.' } %>
+		<div class="box" id="crumb">
+			<span class="crumb-path">
+				/ <a href="/">[root]</a>
+				<% crumb.each_with_index do |p, i| %>
+					/
+					<%= "<a href='/#{e crumb[0..i].join('/')}'>#{e p}</a>" %>
+				<% end %>
+			</span>
+
+			<% if File.directory? path %>
+				<form method="post" class="remove-dir">
+					<input type="hidden" name="_method" value="delete">
+					<button class="btn">rmdir</button>
+				</form>
 			<% end %>
 		</div>
 
+		<% if session[:flash] %>
+			<div class="box flash <%= e session[:flash][1]%>"><%= e session[:flash][0] %></div>
+			<% session.delete :flash %>
+		<% end %>
+
 		<%= yield %>
+		<script src="/script.js"></script>
 	</body>
 </html>
