@@ -1,4 +1,4 @@
-<h1><%= e path_or_uri_to_title(File.basename(path)) %></h1>
+<h1><%= e path_or_uri_to_title(File.basename(path)).sub(/^\//, '') %></h1>
 
 <div class="buttons">
 	<% if File.exists? path %>
@@ -7,7 +7,13 @@
 			<button class="btn">rm</button>
 		</form>
 		
-		<a class="btn" href="<%= e uri %>.log">log</a>
+		<a class="btn" href="/<%= e uri %>.log">log</a>
+
+		<form method="post" class="mv-page">
+			<input type="hidden" name="mv-page" value="true">
+			<input type="text" name="new-name" placeholder="New name" value="">
+			<button class="btn">mv</button>
+		</form>
 	<% end %>
 </div>
 
@@ -28,7 +34,6 @@
 	</button>
 </form>
 
-<link rel="stylesheet" href="/contrib/pagedown/demo/browser/demo.css">
 <script src="/contrib/pagedown/Markdown.Converter.js"></script>
 <script src="/contrib/pagedown/Markdown.Sanitizer.js"></script>
 <script src="/contrib/pagedown/Markdown.Editor.js"></script>

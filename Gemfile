@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'sinatra'
-gem 'kramdown'
 gem 'bcrypt'
+gem 'kramdown'
+gem 'sinatra'

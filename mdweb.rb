@@ -1,17 +1,25 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 #
-# http://code.arp242.net/markdown-web
+# http://code.arp242.net/arkdown-web
 #
 # Copyright © 2014 Martin Tournoij <martin@arp242.net>
 # See below for full copyright
 #
 # TODO: 
-# - Detect links, and possibly other pagedown preview stuff
+# - Detect if a file is changed since we last opened it
+# - Warning is hg/git not found on running
+# - Some styling could be better
+#
+# Later versions:
 # - Write a bunch of tests
+# - Maybe allow execution of code in pages? Would be cool to write code docs
+# - rails integration? lib/sidekiq/web.rb does something like that; this way we
+#   can document a rails project, and view it with mdweb
+# - More fine-grained access control
 #
 
-
+require 'bundler/setup'
 require 'kramdown'
 require 'sinatra'
 
@@ -29,25 +37,27 @@ use(Rack::Auth::Basic, 'Restricted Area') do |u, p|
 end
 
 
-before('/*.markdown') do
+before %r{/.*\.(markdown|md)$} do
 	@uri = "#{params[:splat].join '/'}.markdown"
 	@path = "#{PATH_DATA}/#{@uri}"
 	@title = path_or_uri_to_title @uri
 end
 
-before('/*') do
+before '/*' do
 	@uri = "#{params[:splat].join '/'}"
 	@path = "#{PATH_DATA}/#{@uri}"
 	@title = path_or_uri_to_title @uri
 end
 
 
-get '/*.markdown' do
+get %r{/.*\.(markdown|md)$} do
 	markdown = ''
 	html = ''
 	if File.exists? @path
 		markdown = File.open(@path, 'r').read
-		html = Kramdown::Document.new(markdown).to_html
+		# TODO: We also have html.warnings?
+		html = Kramdown::Document.new(markdown, MARKDOWN_OPTIONS.merge({input: MARKDOWN_FLAVOUR})).to_html
+
 		# Remove trailing newline from <pre>
 		html = html.gsub(/\n<\/code><\/pre>/, '</code></pre>')
 
@@ -58,25 +68,33 @@ get '/*.markdown' do
 end
 
 
-get '/*.markdown.log' do
+get %r{/.*\.(markdown|md)\.log$} do
 	@path = @path.sub(/\.log$/, '')
 	erb :log, locals: { path: @path, uri: @uri, title: @title, log: VCS.log(@uri.sub(/\.log$/, '')) }
 end
 
 
-post '/*.markdown' do
-	File.open(@path, 'w+') do |fp|
-		fp.write params['content'].gsub "\r\n", "\n"
-		fp.write "\n" unless params['content'].end_with? "\n"
-	end
+post %r{/.*\.(markdown|md)$} do
+	if params['mv-page']
+		new_path, new_url = user_input_to_path params['new-name'], File.dirname(@path)
+		File.rename @path, new_path
+		VCS.commit current_user
+		flash "Page ‘#{@title}’ moved to ‘#{path_or_uri_to_title new_path}’"
+		redirect new_url
+	else
+		File.open(@path, 'w+') do |fp|
+			fp.write params['content'].gsub "\r\n", "\n"
+			fp.write "\n" unless params['content'].end_with? "\n"
+		end
 
-	VCS.commit current_user
-	flash 'File saved'
-	redirect @uri
+		VCS.commit current_user
+		flash "Page ‘#{@title}’ saved"
+		redirect @uri
+	end
 end
 
 
-delete '/*.markdown' do
+delete %r{/.*\.(markdown|md)$} do
 	File.unlink @path
 
 	VCS.commit current_user
@@ -88,7 +106,7 @@ end
 delete '/*' do
 	begin
 		Dir.rmdir @path
-		flash "Directoy ‘#{@title}’ removed"
+		flash "Directory ‘#{@title}’ removed"
 		redirect '/'
 	rescue Errno::ENOTEMPTY
 		flash "Directory ‘#{@title}’ is not empty", :error
@@ -103,29 +121,25 @@ end
 
 
 put '/*' do
-	params[:dir].strip!
 	params[:name].strip!
-
-	if params[:name] == ''
+	if params[:name].strip == ''
 		flash 'Filename is empty', :error
 		# TODO: Don't rely on referrer
 		redirect request.env['HTTP_REFERER'] || '/'
 	end
 
-	new = "#{params[:dir]}/#{params[:name]}"
+	new_path, new_url = user_input_to_path params[:name], "#{PATH_DATA}/#{params[:dir]}", params[:type] == 'dir'
 
 	if params[:type] == 'file'
-		new += '.markdown' unless new.end_with? '.markdown'
-
-		if File.exists? "#{PATH_DATA}/#{new}"
+		if File.exists? "#{new_path}"
 			flash 'File already exists; here it is', :error
 		else
-			FileUtils.touch "#{PATH_DATA}/#{new}"
+			FileUtils.touch "#{new_path}"
 		end
-		redirect new
+		redirect new_url
 	else
-		FileUtils.mkdir_p "#{PATH_DATA}/#{new}"
-		redirect new
+		FileUtils.mkdir_p "#{new_path}"
+		redirect new_url
 	end
 end
 

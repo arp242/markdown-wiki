@@ -14,3 +14,14 @@ PATH_USERS = "#{File.realpath(File.dirname($0))}/users"
 
 # Hg.new or Git.new
 VCS = [Hg.new, Git.new].select { |vcs| vcs.present? PATH_DATA }[0]
+
+# Which markdown flavour to use
+#
+# - kramdown - The Kramdown syntax (Markdown + more).
+# - gfm - Same as :kramdown, except that newlines are always preserved as-is,
+#         and that ``` blocks are recognized.
+# - markdown - The original markdown syntax
+MARKDOWN_FLAVOUR = :kramdown
+
+# Additional options, see http://kramdown.gettalong.org/documentation.html
+MARKDOWN_OPTIONS = {}

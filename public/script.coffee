@@ -20,6 +20,9 @@ document.body.addEventListener 'click', (e) ->
 			preview.style.display = 'none'
 			document.getElementById('page').style.display = 'block'
 			e.target.innerHTML = 'Enable preview'
+	else if e.target.id is 'mv-page'
+		e.preventDefault()
+		document.getElementsByClassName('mv-page')[0].style.display = 'inline-block'
 
 
 document.addEventListener 'DOMContentLoaded', ->
@@ -35,6 +38,7 @@ document.addEventListener 'DOMContentLoaded', ->
 	handle.addEventListener 'mousedown', (e) ->
 		drag = true
 		start = e.clientY
+		original = textarea.clientHeight
 		document.body.focus()
 		e.preventDefault()
 
@@ -43,3 +47,24 @@ document.addEventListener 'DOMContentLoaded', ->
 		textarea.style.height = "#{original + e.clientY - start - 13}px"
 
 	document.body.addEventListener 'mouseup', (e) -> drag = false
+
+
+# Chrome (& Webkit?) doesn't support Auth over WebSockets... :-/
+# https://code.google.com/p/chromium/issues/detail?id=123862
+document.addEventListener 'DOMContentLoaded', ->
+	req = null
+	timer = null
+	poll = ->
+		return if req?
+		loc = window.location.href
+		if loc.substr(-9) isnt '.markdown' and loc.substr(-3) isnt '.md'
+			clearInterval timer
+			return
+
+		#req = jQuery.ajax
+		#	url: loc
+		#	success: (data) ->
+		#		alert data
+		#	done: -> req = null
+
+	timer = setInterval poll, 3000

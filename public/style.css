@@ -27,14 +27,20 @@ ul.listing {
     padding-left: 0; }
   ul.listing li {
     list-style: none;
-    padding-left: 0; }
+    padding-left: 0;
+    margin-bottom: 0; }
     ul.listing li a {
       display: block; }
       ul.listing li a:hover {
         background-color: #fff58f;
         text-decoration: none; }
     ul.listing li ul li a {
+      padding: 0.1em;
       padding-left: 2em; }
+      ul.listing li ul li a span {
+        color: #b7bfff; }
+      ul.listing li ul li a:hover span {
+        color: #3333ff; }
   ul.listing .dir {
     display: inline-block;
     margin-top: 1em;
@@ -197,3 +203,10 @@ pre {
   height: 0;
   clear: both;
   visibility: hidden; }
+
+footer {
+  text-align: right;
+  margin-top: 1em; }
+
+.mv-page {
+  display: none; }

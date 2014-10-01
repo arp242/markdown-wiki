@@ -8,6 +8,14 @@ while true
 	while true
 		print "Username: "
 		user = gets.chomp
+		
+		valid = valid_username? user
+
+		unless valid == true
+			puts valid
+			next
+		end
+
 		break if user.length > 0
 	end
 
@@ -16,7 +24,15 @@ while true
 		`stty -echo`
 		pass = gets.chomp
 		`stty echo`
-		break if pass.length > 0
+
+		# TODO: We would like to do a better check for password
+		# complexity/quality
+		if pass.length < 8
+			puts 'Password must be at least 8 characters'
+			next
+		end
+
+		break
 	end
 	puts ''
 

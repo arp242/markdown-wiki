@@ -12,7 +12,7 @@ $link_color: #3333ff
 	// IE9 and down
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}', GradientType=0)
 
-// Fix syntax highlight...
+// Fix syntax highlight in vim...
 // '
 
 
@@ -49,6 +49,7 @@ ul.listing
 	li
 		list-style: none
 		padding-left: 0
+		margin-bottom: 0
 
 		a
 			display: block
@@ -58,7 +59,15 @@ ul.listing
 				text-decoration: none
 
 		ul li a
+			padding: .1em
 			padding-left: 2em
+
+			span
+				color: #b7bfff
+
+			&:hover
+				span
+					color: $link_color
 
 
 	.dir
@@ -229,3 +238,10 @@ pre
 		height: 0
 		clear: both
 		visibility: hidden
+
+footer
+	text-align: right
+	margin-top: 1em
+
+.mv-page
+	display: none

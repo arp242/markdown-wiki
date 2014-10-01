@@ -4,6 +4,8 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>mdweb: <%= e @title %></title>
 		<link rel="stylesheet" href="/style.css">
+		<%# TODO: Put this in style.sass %>
+		<link rel="stylesheet" href="/contrib/pagedown/demo/browser/demo.css">
 	</head>
 
 	<body>
@@ -32,5 +34,7 @@
 
 		<%= yield %>
 		<script src="/script.js"></script>
+
+		<footer><a href="http://code.arp242.net/markdown-web">markdown-web 1.0-BETA</a></footer>
 	</body>
 </html>

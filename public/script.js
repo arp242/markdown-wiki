@@ -29,6 +29,9 @@
         document.getElementById('page').style.display = 'block';
         return e.target.innerHTML = 'Enable preview';
       }
+    } else if (e.target.id === 'mv-page') {
+      e.preventDefault();
+      return document.getElementsByClassName('mv-page')[0].style.display = 'inline-block';
     }
   });
 
@@ -46,6 +49,7 @@
     handle.addEventListener('mousedown', function(e) {
       drag = true;
       start = e.clientY;
+      original = textarea.clientHeight;
       document.body.focus();
       return e.preventDefault();
     });
@@ -58,6 +62,23 @@
     return document.body.addEventListener('mouseup', function(e) {
       return drag = false;
     });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var poll, req, timer;
+    req = null;
+    timer = null;
+    poll = function() {
+      var loc;
+      if (req != null) {
+        return;
+      }
+      loc = window.location.href;
+      if (loc.substr(-9) !== '.markdown' && loc.substr(-3) !== '.md') {
+        clearInterval(timer);
+      }
+    };
+    return timer = setInterval(poll, 3000);
   });
 
 }).call(this);
