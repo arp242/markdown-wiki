@@ -11,15 +11,14 @@ $link_color: #3333ff
 
 	// IE9 and down
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}', GradientType=0)
-
-// Fix syntax highlight in vim...
-// '
+	// This quote fixes syntax highlight in vim: '
 
 
 body
 	max-width: 60em
 	margin-top: 1em
 	margin-left: 1em
+	// TODO: Include as webfont?
 	font-family: 'DejaVu Sans Serif', Arial, sans-serif
 	font-size: 14px
 	line-height: 1.5em
@@ -143,23 +142,33 @@ pre
 	max-height: 40em
 	width: auto
 	overflow: auto
-	background-color: #eee
+	//background-color: #eee
 	padding: .5em
 	border-radius: 2px
 	border: 1px solid #ddd
 
 	code
+		background-color: inherit
 		white-space: inherit
+
+// Fix if you start the page with a pre;
+#page > pre:first-child,
+#page > style:nth-child(1) + pre:nth-child(2)
+	margin-top: 5em
+
+blockquote
+	border-left: .3em solid #2200ff
+	padding-left: .3em
+	margin-left: 2em
+
 
 .flash
 	margin-top: 1em
 	font-weight: bold
 
 	&.success
-		//background-color: #d0ffd0
 		@include gradient-vertical(#d0ffd0, #b0ffb0)
 	&.error
-		//background-color: #ffd0d0
 		@include gradient-vertical(#ffd0d0, #ffb0b0)
 
 .log-entry
@@ -245,3 +254,65 @@ footer
 
 .mv-page
 	display: none
+
+
+// *** Markdown editor ***
+.wmd-button-row
+	position: relative
+	margin-left: 5px
+	margin-right: 5px
+	margin-bottom: 5px
+	margin-top: 10px
+	padding: 0px
+	height: 20px
+
+.wmd-spacer
+	position: absolute
+	display: inline-block
+	width: 1px
+	height: 20px
+	margin-left: 14px
+	list-style: none
+	background-color: #c0c0c0
+
+.wmd-spacer1
+	left: 50px
+
+.wmd-spacer2
+	left: 175px
+
+.wmd-spacer3
+	left: 300px
+
+.wmd-button
+	position: absolute
+	display: inline-block
+	width: 20px
+	height: 20px
+	padding-left: 2px
+	padding-right: 3px
+	list-style: none
+	cursor: pointer
+
+	span
+		display: inline-block
+		width: 20px
+		height: 20px
+		background-image: url(contrib/pagedown/wmd-buttons.png)
+		background-repeat: no-repeat
+		background-position: 0px 0px
+
+.wmd-prompt-background
+	background-color: #000
+
+.wmd-prompt-dialog
+	border: 1px solid #999999
+	background-color: #f5f5f5
+
+	form > input[type="text"]
+		border: 1px solid #999999
+
+	form > input[type="button"]
+		border: 1px solid #888888
+		font-weight: bold
+		cursor: pointer

@@ -1,22 +1,10 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 #
-# http://code.arp242.net/arkdown-web
+# http://code.arp242.net/markdown-web
 #
 # Copyright © 2014 Martin Tournoij <martin@arp242.net>
 # See below for full copyright
-#
-# TODO: 
-# - Detect if a file is changed since we last opened it
-# - Warning is hg/git not found on running
-# - Some styling could be better
-#
-# Later versions:
-# - Write a bunch of tests
-# - Maybe allow execution of code in pages? Would be cool to write code docs
-# - rails integration? lib/sidekiq/web.rb does something like that; this way we
-#   can document a rails project, and view it with mdweb
-# - More fine-grained access control
 #
 
 require 'bundler/setup'
@@ -37,54 +25,70 @@ use(Rack::Auth::Basic, 'Restricted Area') do |u, p|
 end
 
 
-before %r{/.*\.(markdown|md)$} do
-	@uri = "#{params[:splat].join '/'}.markdown"
-	@path = "#{PATH_DATA}/#{@uri}"
-	@title = path_or_uri_to_title @uri
-end
-
 before '/*' do
 	@uri = "#{params[:splat].join '/'}"
 	@path = "#{PATH_DATA}/#{@uri}"
 	@title = path_or_uri_to_title @uri
+	session[:previous] = @uri
+
+	if !VCS.on_system?
+		flash "The selected VCS ‘#{VCS.name}’ is not found; mdweb will work, but \
+		will *not* keep a history. If you don’t want to use a VCS & want this \
+		warning to disapear, then set VCS to ‘Dummy.new’ in config.rb", :error
+	end
 end
 
 
+# Show markdown page
 get %r{/.*\.(markdown|md)$} do
-	markdown = ''
-	html = ''
-	if File.exists? @path
+	markdown = html = ''
+	if File.exist? @path
 		markdown = File.open(@path, 'r').read
-		# TODO: We also have html.warnings?
 		html = Kramdown::Document.new(markdown, MARKDOWN_OPTIONS.merge({input: MARKDOWN_FLAVOUR})).to_html
-
-		# Remove trailing newline from <pre>
-		html = html.gsub(/\n<\/code><\/pre>/, '</code></pre>')
-
-		# TODO: Detect links
 	end
 
 	erb :page, locals: { path: @path, uri: @uri, title: @title, markdown: markdown, html: html }
 end
 
 
+# Show logs
 get %r{/.*\.(markdown|md)\.log$} do
 	@path = @path.sub(/\.log$/, '')
 	erb :log, locals: { path: @path, uri: @uri, title: @title, log: VCS.log(@uri.sub(/\.log$/, '')) }
 end
 
 
+# Create, edit, or move markdown page
 post %r{/.*\.(markdown|md)$} do
+	# Move page
 	if params['mv-page']
+		if params['new-name'].strip == ''
+			flash 'Page name is empty', :error
+			redirect previous_page
+		end
+
 		new_path, new_url = user_input_to_path params['new-name'], File.dirname(@path)
-		File.rename @path, new_path
+		if File.exist? "#{new_path}"
+			flash "The page ‘#{new_url}’ already exists.", :error
+			redirect previous_page
+		end
+
+		begin
+			FileIO::rename @path, new_path
+		rescue FileIO::Error => exc
+			flash "There was a problem renaming the page to ‘#{path_or_uri_to_title new_url}’: ‘#{exc}’", :error
+			redirect @uri
+		end
 		VCS.commit current_user
 		flash "Page ‘#{@title}’ moved to ‘#{path_or_uri_to_title new_path}’"
 		redirect new_url
+	# Edit or create page
 	else
-		File.open(@path, 'w+') do |fp|
-			fp.write params['content'].gsub "\r\n", "\n"
-			fp.write "\n" unless params['content'].end_with? "\n"
+		begin
+			FileIO::write @path, sanitize_page(params['content'])
+		rescue FileIO::Error => exc
+			flash "There was a problem writing the page ‘#{path_or_uri_to_title @uri}’: ‘#{exc.message}’", :error
+			redirect @uri
 		end
 
 		VCS.commit current_user
@@ -94,8 +98,14 @@ post %r{/.*\.(markdown|md)$} do
 end
 
 
+# Delete markdown page
 delete %r{/.*\.(markdown|md)$} do
-	File.unlink @path
+	begin
+		FileIO::unlink @path
+	rescue FileIO::Error => exc
+		flash "There was a problem deleting the page ‘#{path_or_uri_to_title @uri}’: ‘#{exc.message}’", :error
+		redirect @uri
+	end
 
 	VCS.commit current_user
 	flash "Page ‘#{@title}’ deleted"
@@ -103,42 +113,55 @@ delete %r{/.*\.(markdown|md)$} do
 end
 
 
+# Delete a directory
 delete '/*' do
 	begin
-		Dir.rmdir @path
-		flash "Directory ‘#{@title}’ removed"
-		redirect '/'
-	rescue Errno::ENOTEMPTY
-		flash "Directory ‘#{@title}’ is not empty", :error
+		FileIO::rmdir @path
+	rescue FileIO::Error => exc
+		flash "There was a problem deleting the directory ‘#{path_or_uri_to_title @uri}’: ‘#{exc.message}’", :error
 		redirect @uri
 	end
+
+	flash "Directory ‘#{@title}’ removed"
+	redirect '/'
 end
 
 
+# Get a directory listing
 get '/*' do
 	return erb :listing, locals: { path: @path, uri: @uri, title: @title, listing: get_listing(@path) }
 end
 
 
+# Make a new file or directory
 put '/*' do
 	params[:name].strip!
 	if params[:name].strip == ''
-		flash 'Filename is empty', :error
-		# TODO: Don't rely on referrer
-		redirect request.env['HTTP_REFERER'] || '/'
+		flash 'Page name is empty', :error
+		redirect previous_page
 	end
 
 	new_path, new_url = user_input_to_path params[:name], "#{PATH_DATA}/#{params[:dir]}", params[:type] == 'dir'
 
+	# New file
 	if params[:type] == 'file'
-		if File.exists? "#{new_path}"
-			flash 'File already exists; here it is', :error
+		if File.exist? "#{new_path}"
+			flash 'Page already exists; here it is', :error
 		else
-			FileUtils.touch "#{new_path}"
+			begin
+				FileIO.touch new_path
+			rescue FileIO::Error => exc
+				flash "There was a problem writing to the page ‘#{path_or_uri_to_title new_path}’: ‘#{exc.message}’", :error
+			end
 		end
 		redirect new_url
+	# New dir
 	else
-		FileUtils.mkdir_p "#{new_path}"
+		begin
+			FileIO.mkdir new_path
+		rescue FileIO::Error => exc
+			flash "There was a problem creating the directory ‘#{path_or_uri_to_title new_path}’: ‘#{exc.message}’", :error
+		end
 		redirect new_url
 	end
 end

@@ -1,13 +1,14 @@
-**markdown-web** or **mdweb** is a simple wiki-like system.
+**markdown-web** or **mdweb** is a simple wiki-ish application.
 
 Some features:
 
 - Documents are written in markdown.
 - All documents are stored on the filesystem, you can edit them through the
   webinterface, or directly on the filesystem.
-- Version is tracked with a VCS; currently `hg` and `git` are supported;
-- Simple interface.
-- It's just ~400 lines of code. Simple. Just works™.
+- Version is tracked with a VCS; currently `hg` and `git` are supported.
+- It has a simple interface, no excessive hipster JS.
+- Less than 1000 lines of code, with a straightforward hackable design that just
+  works™.
 
 The author of the program uses it to keep track of TODO lists, recipes, personal
 documentation/cheatsheets on various things… You can use it for anything,
@@ -48,6 +49,20 @@ Known issues
 Changelog
 ---------
 1.0 version is to-be-released.
+
+
+TODO
+----
+- Syntax highlighting for code blocks
+- Detect if a file is changed since we last opened it
+- Some styling could be better
+- Start with an example document, which is a cheatsheet for kramdown markdown
+- Add csrf tokens
+- Maybe allow execution of code in pages? Would be cool to write code docs
+- rails integration? lib/sidekiq/web.rb does something like that; this way we
+  can document a rails project, and view it with mdweb
+- More fine-grained access control
+- Some sort of search?
 
 
 

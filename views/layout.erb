@@ -4,8 +4,6 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>mdweb: <%= e @title %></title>
 		<link rel="stylesheet" href="/style.css">
-		<%# TODO: Put this in style.sass %>
-		<link rel="stylesheet" href="/contrib/pagedown/demo/browser/demo.css">
 	</head>
 
 	<body>
@@ -19,7 +17,7 @@
 				<% end %>
 			</span>
 
-			<% if File.directory? path %>
+			<% if File.directory?(path) && uri != '' %>
 				<form method="post" class="remove-dir">
 					<input type="hidden" name="_method" value="delete">
 					<button class="btn">rmdir</button>
@@ -27,14 +25,16 @@
 			<% end %>
 		</div>
 
-		<% if session[:flash] %>
-			<div class="box flash <%= e session[:flash][1]%>"><%= e session[:flash][0] %></div>
+		<% if session[:flash] && session[:flash].length > 0 %>
+			<% session[:flash].each do |f| %>
+				<div class="box flash <%= e f[1]%>"><%= e f[0] %></div>
+			<% end %>
 			<% session.delete :flash %>
 		<% end %>
 
 		<%= yield %>
-		<script src="/script.js"></script>
 
+		<script src="/script.js"></script>
 		<footer><a href="http://code.arp242.net/markdown-web">markdown-web 1.0-BETA</a></footer>
 	</body>
 </html>

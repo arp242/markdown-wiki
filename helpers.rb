@@ -45,6 +45,12 @@ def current_user
 	request.env['REMOTE_USER']
 end
 
+
+def previous_page
+	session[:previous] || '/'
+end
+
+
 # [
 #     [dir1, [file1, file2]],
 #     [dir2, [file1, file2]],
@@ -86,7 +92,11 @@ def user_input_to_path filename, dir, is_dir=false
 	end
 
 	dir = "#{PATH_DATA}/#{dir}" unless dir.start_with? PATH_DATA
-	full_path = "#{dir}/#{filename}".gsub(/\s/, '_').gsub(/\/+/, '/')
+
+	full_path = File.expand_path "#{dir}/#{filename}".gsub(/\s/, '_').gsub(/\/+/, '/')
+	full_path = "#{PATH_DATA}/#{File.basename full_path}" unless full_path.start_with? PATH_DATA
+
+	p full_path
 
 	return [full_path, path_to_url(full_path)]
 end
@@ -103,5 +113,43 @@ end
 
 
 def flash m, type=:success
-	session[:flash] = [m, type]
+	session[:flash] = [] if session[:flash].nil?
+	session[:flash] << [m, type] unless session[:flash].include? [m, type]
+end
+
+
+def sanitize_page page
+	page += "\n" unless page.end_with? "\n"
+	return page.gsub "\r\n", "\n"
+end
+
+
+# File IO operations with error handling; unfortunatly the errors that Ruby
+# gives us are not always the best errors...
+module FileIO
+	class Error < Exception; end
+
+	def self.catch
+		# TODO: there are more errno's to handle
+		# open(2), write(2), rmdir(2), unlink(2)
+		begin
+			yield
+		rescue Errno::EACCES
+			raise FileIO::Error, 'EACCESS: Permission denied'
+		rescue Errno::ENOTEMPTY
+			raise FileIO::Error, 'ENOTEMPTY: Directory not empty'
+		rescue Errno::EEXIST
+			raise FileIO::Error, 'EEXIST: Already exists'
+		rescue Errno::ENOENT
+			raise FileIO::Error, 'ENOENT: No such file or directory'
+		end
+	end
+
+
+	def self.rename src, dst; self.catch { File.rename src, dst } end
+	def self.unlink path; self.catch { File.unlink path } end
+	def self.rmdir path; self.catch { Dir.rmdir path } end
+	def self.touch path; self.catch { FileUtils.touch path } end
+	def self.write path, data; self.catch { File.open(path, 'w+') { |fp| fp.write data } } end
+	def self.mkdir path; self.catch { FileUtils.mkdir_p path } end
 end

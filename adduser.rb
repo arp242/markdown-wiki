@@ -25,8 +25,6 @@ while true
 		pass = gets.chomp
 		`stty echo`
 
-		# TODO: We would like to do a better check for password
-		# complexity/quality
 		if pass.length < 8
 			puts 'Password must be at least 8 characters'
 			next

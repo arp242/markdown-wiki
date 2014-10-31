@@ -1,3 +1,4 @@
+# Confirm for remove page/directory
 document.body.addEventListener 'submit', (e) ->
 	if e.target.className is 'remove-page'
 		c = confirm 'Remove this page?'
@@ -7,6 +8,7 @@ document.body.addEventListener 'submit', (e) ->
 		e.preventDefault() if not c
 
 
+# Show/hide preview
 document.body.addEventListener 'click', (e) ->
 	if e.target.id is 'show-preview'
 		e.preventDefault()
@@ -25,6 +27,7 @@ document.body.addEventListener 'click', (e) ->
 		document.getElementsByClassName('mv-page')[0].style.display = 'inline-block'
 
 
+# Make the textarea easily resizable
 document.addEventListener 'DOMContentLoaded', ->
 	textarea = document.getElementsByTagName('textarea')[0]
 	return unless textarea?
@@ -36,35 +39,14 @@ document.addEventListener 'DOMContentLoaded', ->
 	textarea.style.resize = 'none'
 
 	handle.addEventListener 'mousedown', (e) ->
+		e.preventDefault()
+		document.body.focus()
 		drag = true
 		start = e.clientY
 		original = textarea.clientHeight
-		document.body.focus()
-		e.preventDefault()
 
 	document.body.addEventListener 'mousemove', (e) ->
 		return unless drag
 		textarea.style.height = "#{original + e.clientY - start - 13}px"
 
 	document.body.addEventListener 'mouseup', (e) -> drag = false
-
-
-# Chrome (& Webkit?) doesn't support Auth over WebSockets... :-/
-# https://code.google.com/p/chromium/issues/detail?id=123862
-document.addEventListener 'DOMContentLoaded', ->
-	req = null
-	timer = null
-	poll = ->
-		return if req?
-		loc = window.location.href
-		if loc.substr(-9) isnt '.markdown' and loc.substr(-3) isnt '.md'
-			clearInterval timer
-			return
-
-		#req = jQuery.ajax
-		#	url: loc
-		#	success: (data) ->
-		#		alert data
-		#	done: -> req = null
-
-	timer = setInterval poll, 3000

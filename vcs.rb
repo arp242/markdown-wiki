@@ -38,8 +38,41 @@ class Vcs
 	private
 
 		def run cmd
-			`cd #{PATH_DATA} && #{cmd}`
+			begin
+				`cd #{PATH_DATA} && #{cmd}`
+				raise "Error code was non-zero" if $? != 0
+			rescue Exception => exc
+				# TODO: We want better error handling here
+				raise exc
+			end
 		end
+end
+
+
+class Dummy < Vcs
+	def commit_message
+		Time.now.to_s
+	end
+
+	def on_system?
+		true
+	end
+
+	def name
+		'Dummy VCS'
+	end
+
+	def present? path
+		true
+	end
+
+	def init; end
+
+	def commit user; end
+
+	def log path, limit
+		[]
+	end
 end
 
 
@@ -56,7 +89,6 @@ class Hg < Vcs
 
 
 	def present? path
-		# TODO: This can be better
 		File.exists? "#{path}/.hg"
 	end
 
@@ -108,7 +140,6 @@ class Git < Vcs
 
 
 	def present? path
-		# TODO: This can be better
 		File.exists? "#{path}/.git"
 	end
 

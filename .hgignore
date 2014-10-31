@@ -10,3 +10,5 @@ data/*.markdown
 data/*/*.markdown
 data/.hg/*
 data/.git/*
+
+tmp/*

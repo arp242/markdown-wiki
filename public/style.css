@@ -111,12 +111,21 @@ pre {
   max-height: 40em;
   width: auto;
   overflow: auto;
-  background-color: #eeeeee;
   padding: 0.5em;
   border-radius: 2px;
   border: 1px solid #dddddd; }
   pre code {
+    background-color: inherit;
     white-space: inherit; }
+
+#page > pre:first-child,
+#page > style:nth-child(1) + pre:nth-child(2) {
+  margin-top: 5em; }
+
+blockquote {
+  border-left: 0.3em solid #2200ff;
+  padding-left: 0.3em;
+  margin-left: 2em; }
 
 .flash {
   margin-top: 1em;
@@ -210,3 +219,60 @@ footer {
 
 .mv-page {
   display: none; }
+
+.wmd-button-row {
+  position: relative;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  margin-top: 10px;
+  padding: 0px;
+  height: 20px; }
+
+.wmd-spacer {
+  position: absolute;
+  display: inline-block;
+  width: 1px;
+  height: 20px;
+  margin-left: 14px;
+  list-style: none;
+  background-color: silver; }
+
+.wmd-spacer1 {
+  left: 50px; }
+
+.wmd-spacer2 {
+  left: 175px; }
+
+.wmd-spacer3 {
+  left: 300px; }
+
+.wmd-button {
+  position: absolute;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  padding-left: 2px;
+  padding-right: 3px;
+  list-style: none;
+  cursor: pointer; }
+  .wmd-button span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image: url(contrib/pagedown/wmd-buttons.png);
+    background-repeat: no-repeat;
+    background-position: 0px 0px; }
+
+.wmd-prompt-background {
+  background-color: black; }
+
+.wmd-prompt-dialog {
+  border: 1px solid #999999;
+  background-color: whitesmoke; }
+  .wmd-prompt-dialog form > input[type="text"] {
+    border: 1px solid #999999; }
+  .wmd-prompt-dialog form > input[type="button"] {
+    border: 1px solid #888888;
+    font-weight: bold;
+    cursor: pointer; }

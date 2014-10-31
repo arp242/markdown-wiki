@@ -1,7 +1,7 @@
-<% unless Dir.exists? path %>
+<% unless Dir.exist? path %>
 	<div>
 		<p>
-			This directory doesn't exist yet;
+			This directory doesn’t exist yet;
 		</p>
 		<form method="post">
 			<input type="hidden" name="_method" value="put">
@@ -27,7 +27,7 @@
 	<% end %>
 </ul>
 
-<% if Dir.exists? path %>
+<% if Dir.exist? path %>
 	<form method="post" class="box create-new">
 		<input type="hidden" name="_method" value="put">
 		Create new
