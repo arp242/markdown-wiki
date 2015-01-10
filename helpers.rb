@@ -1,4 +1,5 @@
 require 'bcrypt'
+require 'rack/csrf'
 
 
 def hash_password pw
@@ -58,8 +59,15 @@ end
 def get_listing path
 	dirs = {path.gsub(/\/+/, '/').sub(/^#{PATH_DATA}/, '') => []}
 	files = []
-	Dir["#{path}/**/*"].sort.each do |f|
+	Dir.glob("#{path}/**/*").sort.each do |f|
 		if File.directory?(f)
+			# Dir.glob doesn't traverse symlinks :-(
+			if File.symlink?(f)
+				files += Dir.glob("#{f}/**/*")
+					.select { |f2| f2.end_with?('.markdown') || f2.end_with?('.md') }
+					.map { |f2| f2.gsub(/\/+/, '/').sub(/^#{PATH_DATA}/, '') }
+			end
+
 			f = f.gsub(/\/+/, '/').sub(/^#{PATH_DATA}/, '')
 			dirs[f] = []
 		elsif f.end_with?('.markdown') || f.end_with?('.md')
@@ -121,6 +129,13 @@ end
 def sanitize_page page
 	page += "\n" unless page.end_with? "\n"
 	return page.gsub "\r\n", "\n"
+end
+
+
+def hash_page str, path=nil
+	d = Digest::SHA256.new
+	d.update str.nil? ? File.open(path, 'r').read : str
+	return d.hexdigest
 end
 
 

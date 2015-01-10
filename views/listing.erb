@@ -4,6 +4,7 @@
 			This directory doesn’t exist yet;
 		</p>
 		<form method="post">
+			<%= Rack::Csrf.csrf_tag env %>
 			<input type="hidden" name="_method" value="put">
 			<input type="hidden" name="type" value="dir">
 			<input type="hidden" name="dir" value="<%= e uri %>">
@@ -29,6 +30,7 @@
 
 <% if Dir.exist? path %>
 	<form method="post" class="box create-new">
+		<%= Rack::Csrf.csrf_tag env %>
 		<input type="hidden" name="_method" value="put">
 		Create new
 		<select name="type">

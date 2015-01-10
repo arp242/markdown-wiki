@@ -1,12 +1,13 @@
-**markdown-web** or **mdweb** is a simple wiki-ish application.
+**markdown-web** or **mdweb** is a simple wiki.
 
 Some features:
 
 - Documents are written in markdown.
 - All documents are stored on the filesystem, you can edit them through the
-  webinterface, or directly on the filesystem.
+  web interface, or directly on the filesystem with your editor of choice.
 - Version is tracked with a VCS; currently `hg` and `git` are supported.
-- It has a simple interface, no excessive hipster JS.
+- It has a simple interface, no excessive hipster JS. Works perfectly fine in
+  lynx.
 - Less than 1000 lines of code, with a straightforward hackable design that just
   works™.
 
@@ -34,8 +35,8 @@ Markdown flavour
 configure this in `config.rb` with `MARKDOWN_FLAVOUR`.
 
 
-Editing documents manually
---------------------------
+Editing documents on the filesystem
+-----------------------------------
 - Spaces are stored as an underscore (`_`).
 - Files must end with `.markdown` or `.md`; all other files are ignored.
 
@@ -53,16 +54,25 @@ Changelog
 
 TODO
 ----
-- Syntax highlighting for code blocks
-- Detect if a file is changed since we last opened it
-- Some styling could be better
-- Start with an example document, which is a cheatsheet for kramdown markdown
-- Add csrf tokens
+## For 1.0:
+- Proper cache headers
+- Fix: http://stackoverflow.com/q/27879100/660921
+- Write Special:Help
+- List it here: `http://www.wikimatrix.org/wiki/become_a_maintainer`
+
+## Later:
+
+- Recognize symlinks as such, and show their destination
 - Maybe allow execution of code in pages? Would be cool to write code docs
 - rails integration? lib/sidekiq/web.rb does something like that; this way we
   can document a rails project, and view it with mdweb
 - More fine-grained access control
 - Some sort of search?
+- Tags; we can do this by creating a dir for each tag, and then symlinking pages
+  we want in this tag
+- File uploads
+- Kramdown can save as PDF, perhaps we want to support this?
+- Gettext
 
 
 

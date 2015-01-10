@@ -39,8 +39,8 @@ class Vcs
 
 		def run cmd
 			begin
-				`cd #{PATH_DATA} && #{cmd}`
-				raise "Error code was non-zero" if $? != 0
+				out = `cd #{PATH_DATA} && #{cmd}`
+				raise out.strip if $? != 0
 			rescue Exception => exc
 				# TODO: We want better error handling here
 				raise exc

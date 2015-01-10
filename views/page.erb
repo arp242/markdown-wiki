@@ -1,38 +1,54 @@
 <h1><%= e path_or_uri_to_title(File.basename(path)).sub(/^\//, '') %></h1>
 
-<div class="buttons">
-	<% if File.exists? path %>
-		<form method="post" class="remove-page">
-			<input type="hidden" name="_method" value="delete">
-			<button class="btn">rm</button>
-		</form>
-		
-		<a class="btn" href="/<%= e uri %>.log">log</a>
+<% if writable == true %>
+	<div class="buttons">
+		<% if File.exists? path %>
+			<form method="post" class="remove-page">
+				<%= Rack::Csrf.csrf_tag env %>
+				<input type="hidden" name="_method" value="delete">
+				<button class="btn">rm</button>
+			</form>
 
-		<form method="post" class="mv-page">
-			<input type="hidden" name="mv-page" value="true">
-			<input type="text" name="new-name" placeholder="New name" value="">
-			<button class="btn">mv</button>
-		</form>
-	<% end %>
-</div>
+			<a class="btn" href="/<%= e uri %>.log">log</a>
+
+			<form method="post" class="mv-page">
+				<%= Rack::Csrf.csrf_tag env %>
+				<input type="hidden" name="mv-page" value="true">
+				<input type="text" name="new-name" placeholder="New name" value=""><button class="btn">mv</button>
+			</form>
+		<% end %>
+	</div>
+<% end %>
 
 <div id="page"><%= html %></div>
-<!-- <div id="wmd-preview"><%# html %></div> -->
+<%# <div id="wmd-preview"><% html ></div> %>
 
 <form method='post' class="markdown">
+	<%= Rack::Csrf.csrf_tag env %>
+	<input type="hidden" name="hash" value="<%= hash %>">
 	<div id="wmd-button-bar"></div>
-	<!-- <div id="show-preview" class="btn">Enable preview</div> -->
+	<a href="/Special:help.markdown" target="_blank" class="markdown-help">Formatting help</a>
+	<%# <div id="show-preview" class="btn">Enable preview</div> %>
 	<textarea name="content" id="wmd-input"><%= e markdown %></textarea>
+	<%# TODO: This looks poop in text browsers %>
 	<div class="resize-handle"><hr><hr><hr></div>
-	<button class="btn save-button">
-		<% if File.exists? path %>
-			Save
-		<% else %>
-			Create
-		<% end %>
+	<% if writable == true %>
+		<button class="btn save-button">
+			<% if File.exists? path %>
+				Save
+			<% else %>
+				Create
+			<% end %>
+	<% else %>
+		<%= writable %>
+	<% end %>
 	</button>
 </form>
+
+<% if new_content %>
+	Your (unsaved) edits:
+	<pre><%= new_content %></pre>
+<% end %>
 
 <script src="/contrib/pagedown/Markdown.Converter.js"></script>
 <script src="/contrib/pagedown/Markdown.Sanitizer.js"></script>

@@ -19,6 +19,7 @@
 
 			<% if File.directory?(path) && uri != '' %>
 				<form method="post" class="remove-dir">
+					<%= Rack::Csrf.csrf_tag env %>
 					<input type="hidden" name="_method" value="delete">
 					<button class="btn">rmdir</button>
 				</form>

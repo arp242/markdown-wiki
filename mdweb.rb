@@ -10,25 +10,30 @@
 require 'bundler/setup'
 require 'kramdown'
 require 'sinatra'
+require 'rack/csrf'
 
 require './helpers.rb'
 require './vcs.rb'
 require './config.rb'
 
 
-enable :sessions
-set :session_secret, SESSION_SECRET
-
 users = read_users
-use(Rack::Auth::Basic, 'Restricted Area') do |u, p|
-	BCrypt::Password.new(users[u]) == p if defined? users[u]
+use Rack::Auth::Basic, 'Restricted Area'  do |u, p|
+	begin
+		BCrypt::Password.new(users[u]) == p if defined? users[u]
+	rescue BCrypt::Errors::InvalidHash
+		false
+	end
 end
+use Rack::Session::Cookie, secret: SESSION_SECRET
+use Rack::Csrf, raise: true
 
 
 before '/*' do
 	@uri = "#{params[:splat].join '/'}"
 	@path = "#{PATH_DATA}/#{@uri}"
 	@title = path_or_uri_to_title @uri
+
 	session[:previous] = @uri
 
 	if !VCS.on_system?
@@ -42,12 +47,26 @@ end
 # Show markdown page
 get %r{/.*\.(markdown|md)$} do
 	markdown = html = ''
-	if File.exist? @path
-		markdown = File.open(@path, 'r').read
-		html = Kramdown::Document.new(markdown, MARKDOWN_OPTIONS.merge({input: MARKDOWN_FLAVOUR})).to_html
+	writable = true
+
+	if @title.start_with? '/Special:'
+		@path = "./views/#{File.basename @path}".sub('Special:', '')
+		writable = "Can't write special pages"
 	end
 
-	erb :page, locals: { path: @path, uri: @uri, title: @title, markdown: markdown, html: html }
+	if File.exist? @path
+		markdown = File.open(@path, 'r').read
+		html = Kramdown::Document.new(markdown, KRAMDOWN_OPTIONS.merge(input: MARKDOWN_FLAVOUR)).to_html
+	end
+
+	new_content = nil
+	if session[:new_content]
+		new_content = session[:new_content]
+		session[:new_content] = nil
+	end
+
+	erb :page, locals: { path: @path, uri: @uri, title: @title, writable: writable,
+		markdown: markdown, html: html, hash: hash_page(markdown), new_content: new_content }
 end
 
 
@@ -84,6 +103,15 @@ post %r{/.*\.(markdown|md)$} do
 		redirect new_url
 	# Edit or create page
 	else
+		current_hash = hash_page nil, @path
+		if current_hash != params[:hash]
+			flash 'The page has been edited since you last opened it. Your changes are *not* saved, and displayed at the bottom of the page.', :error
+			# TODO: We probably want to do a diff(1)
+			session[:new_content] = params[:content]
+			redirect @uri
+			return
+		end
+
 		begin
 			FileIO::write @path, sanitize_page(params['content'])
 		rescue FileIO::Error => exc
@@ -91,9 +119,15 @@ post %r{/.*\.(markdown|md)$} do
 			redirect @uri
 		end
 
-		VCS.commit current_user
-		flash "Page ‘#{@title}’ saved"
-		redirect @uri
+		begin
+			VCS.commit current_user
+			flash "Page ‘#{@title}’ saved"
+		rescue Exception => exc
+			flash "Error saving page ‘#{@title}’. #{VCS.name} said: ‘#{exc}’", :error
+		end
+
+		p "REDIRECT -> #{@uri}"
+		redirect "#{@uri}?x=y"
 	end
 end
 

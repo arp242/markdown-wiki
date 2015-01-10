@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     bcrypt (3.1.7)
+    coderay (1.1.0)
     diff-lcs (1.2.5)
     kramdown (1.5.0)
     rack (1.5.2)
@@ -9,6 +10,8 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    rack_csrf (2.5.0)
+      rack (>= 1.1.0)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
       rspec-expectations (~> 3.1.0)
@@ -32,7 +35,10 @@ PLATFORMS
 
 DEPENDENCIES
   bcrypt
+  coderay
   kramdown
+  rack (< 1.6.0)
   rack-test
+  rack_csrf
   rspec
   sinatra

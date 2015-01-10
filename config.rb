@@ -1,4 +1,5 @@
-# This default should be fine for most people
+# This default should be fine for most people, but for better security put a
+# real random string here
 secret = Digest::SHA2.new
 SESSION_SECRET = secret.update(File.open('users', 'r').read).to_s if File.exists?('users')
 
@@ -24,11 +25,21 @@ VCS = [Hg.new, Git.new].select { |vcs| vcs.present? PATH_DATA }[0] || Hg.new
 
 # Which markdown flavour to use
 #
-# - :kramdown - The Kramdown syntax (Markdown + more).
-# - :gfm - Same as :kramdown, except that newlines are always preserved as-is,
-#         and that ``` blocks are recognized.
-# - :markdown - The original markdown syntax
+# - :kramdown
+#    The Kramdown syntax (Markdown + more).
+#
+# - :gfm
+#    Same as :kramdown, except that newlines are always preserved as-is, and
+#    that ``` blocks are recognized.
+#
+# - :markdown
+#    The original markdown syntax.
 MARKDOWN_FLAVOUR = :kramdown
 
 # Additional options, see http://kramdown.gettalong.org/documentation.html
-MARKDOWN_OPTIONS = {}
+KRAMDOWN_OPTIONS = {
+	syntax_highlighter: :coderay,
+	syntax_highlighter_opts: {
+		line_numbers: false,
+	}
+}

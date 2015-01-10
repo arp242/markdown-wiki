@@ -51,18 +51,18 @@ li {
   margin-bottom: 0.2em; }
 
 h1 {
-  border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid #ddd;
   padding-bottom: 0.5em;
   margin-bottom: 0.5em; }
 
 textarea, input, select {
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   border-radius: 2px;
   font-size: 14px; }
 
 select {
-  background-color: white;
-  color: black; }
+  background-color: #fff;
+  color: #000; }
 
 textarea {
   width: 98.4%;
@@ -71,18 +71,19 @@ textarea {
   margin-top: -1px; }
 
 .resize-handle {
-  background-color: #eeeeee;
-  border-left: 1px solid #dddddd;
-  border-right: 1px solid #dddddd;
+  background-color: #eee;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
   cursor: ns-resize;
   padding: 0.2em 0;
-  margin-right: -1px; }
+  margin-right: -1px;
+  margin-top: -6px; }
   .resize-handle hr {
     height: 0px;
     margin: 0.1em auto;
     border: none;
     width: 10%;
-    border-top: 1px solid #cccccc; }
+    border-top: 1px solid #ccc; }
 
 .save-button {
   margin-right: -1px; }
@@ -103,7 +104,7 @@ button {
 code {
   white-space: pre-wrap;
   border-radius: 2px;
-  background-color: #eeeeee;
+  background-color: #eee;
   padding: 0.2em; }
 
 pre {
@@ -113,7 +114,7 @@ pre {
   overflow: auto;
   padding: 0.5em;
   border-radius: 2px;
-  border: 1px solid #dddddd; }
+  border: 1px solid #ddd; }
   pre code {
     background-color: inherit;
     white-space: inherit; }
@@ -158,32 +159,36 @@ blockquote {
 
 .btn {
   font-size: 14px;
-  background-image: -webkit-linear-gradient(top, #eeeeee 0%, #dddddd 100%);
-  background-image: linear-gradient(to bottom, #eeeeee 0%, #dddddd 100%);
+  background-image: -webkit-linear-gradient(top, #eee 0%, #ddd 100%);
+  background-image: linear-gradient(to bottom, #eee 0%, #ddd 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFEEEEEE', endColorstr='#FFDDDDDD', GradientType=0);
-  color: black;
+  color: #000;
   padding: 0.5em;
   cursor: pointer;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   border-radius: 2px;
   display: inline-block;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1); }
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+  line-height: 1.5em;
+  font-family: "DejaVu Sans Serif", Arial, sans-serif;
+  font-weight: normal; }
   .btn:hover {
     text-decoration: none;
+    color: #000;
     background-image: -webkit-linear-gradient(top, #e6e6e6 0%, #d6d6d6 100%);
     background-image: linear-gradient(to bottom, #e6e6e6 0%, #d6d6d6 100%);
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFE6E6E6', endColorstr='#FFD6D6D6', GradientType=0); }
   .btn:active, .btn:visited {
-    color: black; }
+    color: #000; }
 
 .box {
-  background-image: -webkit-linear-gradient(top, #f9f9f9 0%, #eeeeee 100%);
-  background-image: linear-gradient(to bottom, #f9f9f9 0%, #eeeeee 100%);
+  background-image: -webkit-linear-gradient(top, #f9f9f9 0%, #eee 100%);
+  background-image: linear-gradient(to bottom, #f9f9f9 0%, #eee 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFF9F9F9', endColorstr='#FFEEEEEE', GradientType=0);
-  border: 1px solid #dddddd;
+  border: 1px solid #ddd;
   padding: 0.5em;
   border-radius: 2px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.1); }
@@ -217,8 +222,15 @@ footer {
   text-align: right;
   margin-top: 1em; }
 
-.mv-page {
-  display: none; }
+.mv-page input {
+  margin-right: 0;
+  height: 2.21em;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0; }
+.mv-page .btn {
+  margin-left: -1px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0; }
 
 .wmd-button-row {
   position: relative;
@@ -236,7 +248,7 @@ footer {
   height: 20px;
   margin-left: 14px;
   list-style: none;
-  background-color: silver; }
+  background-color: #c0c0c0; }
 
 .wmd-spacer1 {
   left: 50px; }
@@ -265,14 +277,21 @@ footer {
     background-position: 0px 0px; }
 
 .wmd-prompt-background {
-  background-color: black; }
+  background-color: #000; }
 
 .wmd-prompt-dialog {
   border: 1px solid #999999;
-  background-color: whitesmoke; }
+  background-color: #f5f5f5; }
   .wmd-prompt-dialog form > input[type="text"] {
     border: 1px solid #999999; }
   .wmd-prompt-dialog form > input[type="button"] {
     border: 1px solid #888888;
     font-weight: bold;
     cursor: pointer; }
+
+.markdown-help {
+  float: right;
+  margin-right: 4px;
+  margin-top: 8px; }
+
+/*# sourceMappingURL=style.css.map */

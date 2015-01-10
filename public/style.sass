@@ -106,6 +106,7 @@ textarea
 	cursor: ns-resize
 	padding: .2em 0
 	margin-right: -1px
+	margin-top: -6px
 
 	hr
 		height: 0px
@@ -201,9 +202,13 @@ blockquote
 	border-radius: 2px
 	display: inline-block
 	box-shadow: 0 0 2px rgba(0, 0, 0, .1)
+	line-height: 1.5em
+	font-family: 'DejaVu Sans Serif', Arial, sans-serif
+	font-weight: normal
 
 	&:hover
 		text-decoration: none
+		color: #000
 		@include gradient-vertical(#e6e6e6, #d6d6d6)
 
 	&:active, &:visited
@@ -252,8 +257,18 @@ footer
 	text-align: right
 	margin-top: 1em
 
+
 .mv-page
-	display: none
+	input
+		margin-right: 0
+		height: 2.21em
+		border-top-right-radius: 0
+		border-bottom-right-radius: 0
+
+	.btn
+		margin-left: -1px
+		border-top-left-radius: 0
+		border-bottom-left-radius: 0
 
 
 // *** Markdown editor ***
@@ -316,3 +331,8 @@ footer
 		border: 1px solid #888888
 		font-weight: bold
 		cursor: pointer
+
+.markdown-help
+	float: right
+	margin-right: 4px
+	margin-top: 8px
