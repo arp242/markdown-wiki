@@ -1,4 +1,4 @@
-As the name implies, all documents in Markdown-web are written using
+As the name implies, all documents in Markdown-wiki are written using
 **Markdown**. We use the **Kramdown** flavour, which adds some new syntax to
 "standard" markdown, as well.
 

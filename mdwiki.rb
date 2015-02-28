@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 #
-# http://code.arp242.net/markdown-web
+# http://code.arp242.net/markdown-wiki
 #
 # Copyright © 2014-2015 Martin Tournoij <martin@arp242.net>
 # See below for full copyright

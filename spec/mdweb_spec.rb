@@ -29,7 +29,7 @@ RSpec.describe 'Mdwiki tests' do
 		authorize 'test', 'test'
 		get '/'
 		expect(last_response.status).to eq(200)
-		expect(last_response.body).to match(/markdown-web/)
+		expect(last_response.body).to match(/markdown-wiki/)
 	end
 
 
