@@ -1,10 +1,20 @@
 require 'spec_helper'
 
-RSpec.describe 'Mdweb tests' do
-	include Rack::Test::Methods
-
+RSpec.describe 'Mdwiki tests' do
 	def app
 		Sinatra::Application
+	end
+
+
+	def setup_data files={}
+		`rm -r "#{PATH_DATA}"/*`
+
+		files.each do |f, data|
+			dir = "#{PATH_DATA}/#{File.dirname f}"
+			file = "#{PATH_DATA}/#{File.basename f}"
+			FileUtils.mkdir_p dir
+			File.open(file, 'w') { |fp| fp.write data }
+		end
 	end
 
 
@@ -19,14 +29,18 @@ RSpec.describe 'Mdweb tests' do
 		authorize 'test', 'test'
 		get '/'
 		expect(last_response.status).to eq(200)
-		expect(last_response.body).to have('markdown-web')
+		expect(last_response.body).to match(/markdown-web/)
 	end
 
 
 
 	context 'directory listing' do
+		before { authorize 'test', 'test' }
+
 		context 'root dir' do
 			it 'does not have a rmdir button' do
+				get '/'
+				p last_response.body
 			end
 
 			it 'cannot be removed (even if empty)' do
@@ -46,7 +60,7 @@ RSpec.describe 'Mdweb tests' do
 		end
 
 
-		contet 'all dirs' do
+		context 'all dirs' do
 			it 'list all files' do
 			end
 
@@ -66,6 +80,8 @@ RSpec.describe 'Mdweb tests' do
 
 
 	context 'markdown file' do
+		before { authorize 'test', 'test' }
+
 		it 'shows the file' do
 		end
 
@@ -87,6 +103,8 @@ RSpec.describe 'Mdweb tests' do
 
 
 	context 'vcs' do
+		before { authorize 'test', 'test' }
+
 		context 'hg' do
 		end
 

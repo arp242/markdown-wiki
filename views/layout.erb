@@ -2,13 +2,13 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>mdweb: <%= e @title %></title>
+		<title>mdwiki: <%= e @title %></title>
 		<link rel="stylesheet" href="/style.css">
 	</head>
 
 	<body>
 		<% crumb = uri.split('/').reject { |p| p == '' || p == '.' } %>
-		<div class="box" id="crumb">
+		<div class="box hidden-print" id="crumb">
 			<span class="crumb-path">
 				/ <a href="/">[root]</a>
 				<% crumb.each_with_index do |p, i| %>
@@ -21,14 +21,14 @@
 				<form method="post" class="remove-dir">
 					<%= Rack::Csrf.csrf_tag env %>
 					<input type="hidden" name="_method" value="delete">
-					<button class="btn">rmdir</button>
+					<button class="btn"><%= _('Remove directory') %></button>
 				</form>
 			<% end %>
 		</div>
 
 		<% if session[:flash] && session[:flash].length > 0 %>
 			<% session[:flash].each do |f| %>
-				<div class="box flash <%= e f[1]%>"><%= e f[0] %></div>
+				<div class="box hidden-print flash <%= e f[1]%>"><%= e f[0] %></div>
 			<% end %>
 			<% session.delete :flash %>
 		<% end %>
@@ -36,6 +36,16 @@
 		<%= yield %>
 
 		<script src="/script.js"></script>
-		<footer><a href="http://code.arp242.net/markdown-web">markdown-web 1.0-BETA</a></footer>
+		<footer class="hidden-print">
+			<span class="left">
+				<a href="/Special:upload">Uploads</a>
+				<a href="/Special:help">Help</a>
+				<a href="/Special:recent">Recent changes</a>
+			</span>
+
+			<span class="right">
+				<a href="http://code.arp242.net/markdown-web">markdown-web 1.0-BETA</a>
+			</span>
+		</footer>
 	</body>
 </html>

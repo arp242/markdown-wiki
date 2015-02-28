@@ -1,6 +1,9 @@
 require 'bcrypt'
+require 'gettext'
 require 'rack/csrf'
 
+include GetText
+bindtextdomain 'mdwiki', path: './locale'
 
 def hash_password pw
 	BCrypt::Password.create pw
@@ -8,7 +11,12 @@ end
 
 
 def read_users
+	if ENV['RACK_ENV'] == 'test'
+		return {'test' => '$2a$10$fPwp9rZks7diZ4lIL8Xsw.Hees3CP9URSlmBsJz3NphiZr9F4P8am'}
+	end
+
 	unless File.exists? 'users'
+		# TODO: multiline gettext?
 		puts 'Error: file ./users not found; you need to create this file and add least one user'
 		puts 'The format is:'
 		puts 'username:::password'
@@ -35,9 +43,9 @@ end
 
 def valid_username? user
 	# We do this because we add the username to shell commands in vcs.rb
-	return 'Usernames are restricted to \w (a-zA-Z0-9_])' unless user.match(/^\w*$/)
+	return _('Usernames are restricted to \w (a-zA-Z0-9_])') unless user.match(/^\w*$/)
 	# Be conservative for safety
-	return 'Maximum length is 32 characters ' unless user.length < 33
+	return _('Maximum length is 32 characters') unless user.length < 33
 	return true
 end
 
@@ -83,7 +91,7 @@ def get_listing path
 	return dirs
 end
 
-
+# TODO: This fails for files that start with data
 def path_or_uri_to_title path
 	'/' + path
 		.sub(/^#{PATH_DATA}\/?/, '')
@@ -103,8 +111,6 @@ def user_input_to_path filename, dir, is_dir=false
 
 	full_path = File.expand_path "#{dir}/#{filename}".gsub(/\s/, '_').gsub(/\/+/, '/')
 	full_path = "#{PATH_DATA}/#{File.basename full_path}" unless full_path.start_with? PATH_DATA
-
-	p full_path
 
 	return [full_path, path_to_url(full_path)]
 end
@@ -150,18 +156,19 @@ module FileIO
 		begin
 			yield
 		rescue Errno::EACCES
-			raise FileIO::Error, 'EACCESS: Permission denied'
+			raise FileIO::Error, _('Permission denied') + ' (EACCESS)'
 		rescue Errno::ENOTEMPTY
-			raise FileIO::Error, 'ENOTEMPTY: Directory not empty'
+			raise FileIO::Error, _('Directory not empty') + ' (ENOTEMPTY)'
 		rescue Errno::EEXIST
-			raise FileIO::Error, 'EEXIST: Already exists'
+			raise FileIO::Error, _('Already exists') + ' (EEXIST)'
 		rescue Errno::ENOENT
-			raise FileIO::Error, 'ENOENT: No such file or directory'
+			raise FileIO::Error, _('No such file or directory') + ' (ENOENT)'
 		end
 	end
 
 
 	def self.rename src, dst; self.catch { File.rename src, dst } end
+	def self.copy src, dst; self.catch { FileUtils.cp src, dst} end
 	def self.unlink path; self.catch { File.unlink path } end
 	def self.rmdir path; self.catch { Dir.rmdir path } end
 	def self.touch path; self.catch { FileUtils.touch path } end

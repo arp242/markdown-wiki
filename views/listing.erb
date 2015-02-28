@@ -16,12 +16,24 @@
 <ul class="listing">
 	<% listing.each do |dir, files| %>
 		<li>
-			<a class="dir" href="<%= e dir %>"><%= e path_or_uri_to_title(dir) %></a>
+			<a class="dir" href="<%= e dir %>">
+				<%= e path_or_uri_to_title(dir) %>
+				<% if File.symlink? "#{PATH_DATA}/#{dir}" %>
+					-&gt; <%= File.realpath("#{PATH_DATA}/#{dir}").sub(PATH_DATA, '') %>
+				<% end %>
+			</a>
 			
 			<ul>
 				<% files.each do |f| %>
 					<% t = path_or_uri_to_title(f).split('/') %>
-					<li><a href="<%= e f %>"><span><%= e t[0..-2].join '/' %>/</span><%= e t.pop %></a></li>
+					<li>
+						<a href="<%= e f %>">
+							<span><%= e t[0..-2].join '/' %>/</span><%= e t.pop %>
+							<% if File.symlink? "#{PATH_DATA}/#{f}" %>
+								-&gt; <%= File.realpath("#{PATH_DATA}/#{f}").sub(PATH_DATA, '') %>
+							<% end %>
+						</a>
+					</li>
 				<% end %>
 			</ul>
 		</li>
@@ -29,7 +41,7 @@
 </ul>
 
 <% if Dir.exist? path %>
-	<form method="post" class="box create-new">
+	<form method="post" class="box create-new hidden-print">
 		<%= Rack::Csrf.csrf_tag env %>
 		<input type="hidden" name="_method" value="put">
 		Create new

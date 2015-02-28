@@ -8,19 +8,19 @@ require './config.rb'
 vcs_list = [Hg.new, Git.new].select { |v| v.on_system? }
 
 if vcs_list.length == 0
-	puts 'Error: No VCS on the system; you need either Mercurial or Git'
+	puts _('Error: No VCS on the system; you need either Mercurial or Git')
 	exit 1
 end
 
 vcs_list.each do |v|
 	if v.present? PATH_DATA
-		puts "#{v.name} repo detected in `#{PATH_DATA}'; stopping"
+		puts _("%{vcs_name} repo detected in `%{PATH_DATA}'; stopping", v.name, PATH_DATA)
 		exit 0
 	end
 end
 
 while true
-	puts "No repo detected in `#{PATH_DATA}', would you like to initialize it?"
+	puts _("No repo detected in `%{PATH_DATA}', would you like to initialize it?", PATH_DATA)
 	vcs_list.each_with_index { |v, i| puts "#{i + 1}) Yes, with #{v.name}" }
 	puts "#{vcs_list.length + 1}) No, not right now; exit"
 
@@ -29,7 +29,7 @@ while true
 		answer = gets.chomp.to_i
 
 		if answer == 0 || answer > vcs_list.length + 1
-			puts 'That is not a valid choice'
+			puts _('That is not a valid choice')
 			next
 		end
 

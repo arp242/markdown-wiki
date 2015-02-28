@@ -39,12 +39,14 @@ class Vcs
 
 		def run cmd
 			begin
-				out = `cd #{PATH_DATA} && #{cmd}`
-				raise out.strip if $? != 0
+				out = `cd #{PATH_DATA} && #{cmd}`.strip
+				raise out if $? != 0
 			rescue Exception => exc
 				# TODO: We want better error handling here
 				raise exc
 			end
+
+			return out
 		end
 end
 

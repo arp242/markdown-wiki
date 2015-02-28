@@ -65,28 +65,15 @@ select {
   color: #000; }
 
 textarea {
-  width: 98.4%;
+  width: 98.2%;
   height: 30em;
   padding: 0.5em;
-  margin-top: -1px; }
-
-.resize-handle {
-  background-color: #eee;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  cursor: ns-resize;
-  padding: 0.2em 0;
-  margin-right: -1px;
-  margin-top: -6px; }
-  .resize-handle hr {
-    height: 0px;
-    margin: 0.1em auto;
-    border: none;
-    width: 10%;
-    border-top: 1px solid #ccc; }
+  margin-top: -1px;
+  float: left; }
 
 .save-button {
-  margin-right: -1px; }
+  margin-top: -2px;
+  float: left; }
 
 button {
   padding: 0.5em;
@@ -219,14 +206,25 @@ blockquote {
   visibility: hidden; }
 
 footer {
-  text-align: right;
-  margin-top: 1em; }
+  padding-top: 0.5em;
+  border-top: 1px solid #ddd;
+  margin-top: 1em;
+  margin-bottom: 3em;
+  padding-left: 0.5em;
+  padding-right: 0.5em; }
+  footer .right {
+    float: right; }
+  footer .left {
+    float: left; }
+    footer .left a {
+      margin-right: 1em; }
 
 .mv-page input {
   margin-right: 0;
   height: 2.21em;
   border-top-right-radius: 0;
-  border-bottom-right-radius: 0; }
+  border-bottom-right-radius: 0;
+  padding-left: 0.5em; }
 .mv-page .btn {
   margin-left: -1px;
   border-top-left-radius: 0;
@@ -293,5 +291,9 @@ footer {
   float: right;
   margin-right: 4px;
   margin-top: 8px; }
+
+@media print {
+  .hidden-print {
+    display: none !important; } }
 
 /*# sourceMappingURL=style.css.map */

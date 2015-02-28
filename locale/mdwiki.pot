@@ -1,0 +1,95 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-28 01:55+0100\n"
+"PO-Revision-Date: 2015-02-28 01:55+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: adduser.rb:13
+msgid "Username"
+msgstr ""
+
+#: adduser.rb:35
+msgid ""
+"Password is not strong enough (score is %{score}, and should be at least %{MIN"
+"_PASSWORD_SCORE}"
+msgstr ""
+
+#: adduser.rb:46
+msgid "Okay, add another user?"
+msgstr ""
+
+#: helpers.rb:46
+msgid "Usernames are restricted to \\w (a-zA-Z0-9_])"
+msgstr ""
+
+#: helpers.rb:48
+msgid "Maximum length is 32 characters"
+msgstr ""
+
+#: helpers.rb:161
+msgid "Permission denied"
+msgstr ""
+
+#: helpers.rb:163
+msgid "Directory not empty"
+msgstr ""
+
+#: helpers.rb:165
+msgid "Already exists"
+msgstr ""
+
+#: helpers.rb:167
+msgid "No such file or directory"
+msgstr ""
+
+#: install.rb:11
+msgid "Error: No VCS on the system; you need either Mercurial or Git"
+msgstr ""
+
+#: install.rb:17
+msgid "%{vcs_name} repo detected in `%{PATH_DATA}'; stopping"
+msgstr ""
+
+#: install.rb:23
+msgid "No repo detected in `%{PATH_DATA}', would you like to initialize it?"
+msgstr ""
+
+#: install.rb:32
+msgid "That is not a valid choice"
+msgstr ""
+
+#: mdwiki.rb:21
+msgid "Restricted Area"
+msgstr ""
+
+#: mdwiki.rb:99
+msgid "Page name is empty"
+msgstr ""
+
+#: mdwiki.rb:105
+msgid "The page ‘%{new_url}’ already exists."
+msgstr ""
+
+#: mdwiki.rb:122
+msgid ""
+"The page has been edited since you last opened it. Your changes are *not* save"
+"d, and displayed at the bottom of the page."
+msgstr ""
+
+#: mdwiki.rb:139
+msgid "Page ‘%{title}’ saved"
+msgstr ""

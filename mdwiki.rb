@@ -3,22 +3,28 @@
 #
 # http://code.arp242.net/markdown-web
 #
-# Copyright © 2014 Martin Tournoij <martin@arp242.net>
+# Copyright © 2014-2015 Martin Tournoij <martin@arp242.net>
 # See below for full copyright
 #
 
 require 'bundler/setup'
+require 'gettext'
 require 'kramdown'
 require 'sinatra'
 require 'rack/csrf'
+
+require 'better_errors' # TODO: dev only
+configure :development do
+	use BetterErrors::Middleware
+	BetterErrors.application_root = __dir__
+end
 
 require './helpers.rb'
 require './vcs.rb'
 require './config.rb'
 
-
 users = read_users
-use Rack::Auth::Basic, 'Restricted Area'  do |u, p|
+use Rack::Auth::Basic, _('Restricted Area')  do |u, p|
 	begin
 		BCrypt::Password.new(users[u]) == p if defined? users[u]
 	rescue BCrypt::Errors::InvalidHash
@@ -37,25 +43,39 @@ before '/*' do
 	session[:previous] = @uri
 
 	if !VCS.on_system?
-		flash "The selected VCS ‘#{VCS.name}’ is not found; mdweb will work, but \
+		flash "The selected VCS ‘#{VCS.name}’ is not found; mdwiki will work, but \
 		will *not* keep a history. If you don’t want to use a VCS & want this \
 		warning to disapear, then set VCS to ‘Dummy.new’ in config.rb", :error
 	end
 end
 
 
+# Show special page
+get(/\/special:/i) do
+	file = File.basename(@path).sub(/special:/i, '').to_sym
+
+	if file == :recent
+		recent = VCS.log PATH_DATA, 50
+		erb file, locals: { path: @path, uri: @uri, title: @title, recent: recent }
+	else
+		erb file, locals: { path: @path, uri: @uri, title: @title }
+	end
+end
+
+# Redirect 'page.' to 'page.markdown' (allows for easier linking)
+get(%r{/.*@$}) { redirect "#{@uri[0..-2]}.markdown" }
+
 # Show markdown page
 get %r{/.*\.(markdown|md)$} do
 	markdown = html = ''
 	writable = true
 
-	if @title.start_with? '/Special:'
-		@path = "./views/#{File.basename @path}".sub('Special:', '')
-		writable = "Can't write special pages"
-	end
-
 	if File.exist? @path
 		markdown = File.open(@path, 'r').read
+		hash = hash_page markdown
+
+		# TODO: Make this an option
+		markdown = markdown.gsub(/\t/, ' ' * 4)
 		html = Kramdown::Document.new(markdown, KRAMDOWN_OPTIONS.merge(input: MARKDOWN_FLAVOUR)).to_html
 	end
 
@@ -66,7 +86,7 @@ get %r{/.*\.(markdown|md)$} do
 	end
 
 	erb :page, locals: { path: @path, uri: @uri, title: @title, writable: writable,
-		markdown: markdown, html: html, hash: hash_page(markdown), new_content: new_content }
+		markdown: markdown, html: html, hash: hash, new_content: new_content }
 end
 
 
@@ -82,13 +102,17 @@ post %r{/.*\.(markdown|md)$} do
 	# Move page
 	if params['mv-page']
 		if params['new-name'].strip == ''
-			flash 'Page name is empty', :error
+			flash _('Page name is empty'), :error
 			redirect previous_page
+		end
+
+		if params['new-name'].end_with? '/'
+			params['new-name'] = "#{params['new-name']}/#{File.basename @path}"
 		end
 
 		new_path, new_url = user_input_to_path params['new-name'], File.dirname(@path)
 		if File.exist? "#{new_path}"
-			flash "The page ‘#{new_url}’ already exists.", :error
+			flash _('The page ‘%{new_url}’ already exists.') % {new_url: new_url}, :error
 			redirect previous_page
 		end
 
@@ -105,8 +129,9 @@ post %r{/.*\.(markdown|md)$} do
 	else
 		current_hash = hash_page nil, @path
 		if current_hash != params[:hash]
-			flash 'The page has been edited since you last opened it. Your changes are *not* saved, and displayed at the bottom of the page.', :error
+			flash _('The page has been edited since you last opened it. Your changes are *not* saved, and displayed at the bottom of the page.'), :error
 			# TODO: We probably want to do a diff(1)
+			# TODO: Fails if page size >4k
 			session[:new_content] = params[:content]
 			redirect @uri
 			return
@@ -121,13 +146,12 @@ post %r{/.*\.(markdown|md)$} do
 
 		begin
 			VCS.commit current_user
-			flash "Page ‘#{@title}’ saved"
-		rescue Exception => exc
-			flash "Error saving page ‘#{@title}’. #{VCS.name} said: ‘#{exc}’", :error
+			flash _('Page ‘%{title}’ saved') % {title: @title}
+		rescue FileIO::Error => exc
+			flash "Error saving page ‘#{@title}’. Error reported: ‘#{exc}’", :error
 		end
 
-		p "REDIRECT -> #{@uri}"
-		redirect "#{@uri}?x=y"
+		redirect "#{@uri}?r" # We need the ?r or lynx won't redirect; 
 	end
 end
 
@@ -201,9 +225,21 @@ put '/*' do
 end
 
 
+# Upload
+# TODO: Finish this
+post '/upload' do
+	tmpfile = params[:file][:tempfile]
+	name = params[:file][:filename]
+	FileIO.copy(tmpfile.path, "#{PATH_DATA}/../public/uploads/#{name}")
+
+	flash _('File ‘%{filename}’ uploaded.') % {filename: name}
+	redirect '/Special:upload'
+end
+
+
 # The MIT License (MIT)
 #
-# Copyright © 2014 Martin Tournoij
+# Copyright © 2014-2015 Martin Tournoij
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to

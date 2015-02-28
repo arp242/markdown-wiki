@@ -8,16 +8,10 @@ SESSION_SECRET = secret.update(File.open('users', 'r').read).to_s if File.exists
 BCrypt::Engine.cost = 4
 
 # Where our data is stored
-PATH_DATA = "#{File.realpath(File.dirname($0))}/data"
+PATH_DATA ||= "#{File.realpath(File.dirname($0))}/data"
 
 # User file
-PATH_USERS = "#{File.realpath(File.dirname($0))}/users"
-
-# Temp files
-PATH_TMP = "#{File.realpath(File.dirname($0))}/tmp"
-
-# Cache files
-PATH_CACHE = "#{PATH_TMP}/cache"
+PATH_USERS ||= "#{File.realpath(File.dirname($0))}/users"
 
 # Hg.new or Git.new
 # You can use Dummy.new to disable history
@@ -43,3 +37,5 @@ KRAMDOWN_OPTIONS = {
 		line_numbers: false,
 	}
 }
+
+MIN_PASSWORD_SCORE = 4
