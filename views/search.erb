@@ -1,0 +1,19 @@
+<form action="/special:search" method="get">
+	<input type="Search" name="q" value="<%= q %>">
+	<input type="submit" value="Search">
+</form>
+
+<% unless results.nil? %>
+	<% if results == {} %>
+		No results
+	<% end %>
+	
+	<% results.each do |filename, matches| %>
+		<h2><a href="<%= e filename %>"><%= e filename %></a></h2>
+		<ul>
+			<% matches.each do |lineno, text| %>
+				<li><%= lineno %>: <code><%= e text %></code></li>
+			<% end %>
+		</ul>
+	<% end %>
+<% end %>

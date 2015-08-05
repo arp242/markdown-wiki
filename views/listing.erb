@@ -14,8 +14,8 @@
 <% end %>
 
 <ul class="listing">
-	<% listing.each do |dir, files| %>
-		<li>
+	<% listing.each do |dir, data| %>
+		<li class="level-<%= data[:level] %>">
 			<a class="dir" href="<%= e dir %>">
 				<%= e path_or_uri_to_title(dir) %>
 				<% if File.symlink? "#{PATH_DATA}/#{dir}" %>
@@ -24,7 +24,7 @@
 			</a>
 			
 			<ul>
-				<% files.each do |f| %>
+				<% data[:files].each do |f| %>
 					<% t = path_or_uri_to_title(f).split('/') %>
 					<li>
 						<a href="<%= e f %>">
@@ -52,7 +52,7 @@
 		in
 		<select name="dir">
 			<option value="<%= e uri %>">current directory</option>
-			<% listing.each do |dir, files| %>
+			<% listing.each do |dir, data| %>
 				<option value="<%= e dir %>"><%= e dir %></option>
 			<% end %>
 		</select>

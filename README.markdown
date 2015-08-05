@@ -8,8 +8,8 @@ Some features:
 - Version is tracked with a VCS; currently `hg` and `git` are supported.
 - It has a simple interface, no excessively ‘hip’ JS. It’s perfectly usable in
   `lynx`.
-- Less than 1000 lines of code, with a straightforward hackable design that just
-  works™.
+- Less than 1000 lines of code, with a straightforward hackable design that
+  ‘just works’™.
 
 The author of the program uses it to keep track of TODO lists, recipes, personal
 documentation/cheatsheets on various things… You can use it for anything,
@@ -66,15 +66,16 @@ TODO
 - File uploads.
 - Translations with gettext
 - Write Special:Help
+- Start page
+- Index now shows everything ... Maybe make this configurable/smarter
+  (perhaps collapse)?
+- Search in filenames & content; we can maybe use hg/git so we have a okay(-ish)
+  performance (?) But this won't search non-commited changes?
 - And finally ... list it here: `http://www.wikimatrix.org/wiki/become_a_maintainer`
 
 ## Later:
-- Index now shows everything ... Maybe make this configurable/smarter
-  (perhaps collapse)?
 - More fine-grained access control; maybe some sort of glob pattern (or list of
   them) for each user.
-- Search in filenames & content; we can maybe use hg/git so we have a okay(-ish)
-  performance (?) But this won't search non-commited changes?
 - Tags; we can do this by creating a dir for each tag, and then symlinking pages
   we want in this tag.
 

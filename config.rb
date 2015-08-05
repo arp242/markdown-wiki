@@ -1,3 +1,5 @@
+TITLE = 'mdwiki: '
+
 # This default should be fine for most people, but for better security put a
 # real random string here
 secret = Digest::SHA2.new

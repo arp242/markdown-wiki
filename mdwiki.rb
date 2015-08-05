@@ -13,12 +13,6 @@ require 'kramdown'
 require 'sinatra'
 require 'rack/csrf'
 
-require 'better_errors' # TODO: dev only
-configure :development do
-	use BetterErrors::Middleware
-	BetterErrors.application_root = __dir__
-end
-
 require './helpers.rb'
 require './vcs.rb'
 require './config.rb'
@@ -57,6 +51,13 @@ get(/\/special:/i) do
 	if file == :recent
 		recent = VCS.log PATH_DATA, 50
 		erb file, locals: { path: @path, uri: @uri, title: @title, recent: recent }
+	elsif file == :search
+		q = results = nil
+		if params[:q]
+			q = params[:q]
+			results = VCS.search q
+		end
+		erb file, locals: { path: @path, uri: @uri, title: @title, q: q, results: results }
 	else
 		erb file, locals: { path: @path, uri: @uri, title: @title }
 	end
@@ -187,6 +188,7 @@ end
 
 # Get a directory listing
 get '/*' do
+	# TODO: Check if we have a _start.markdown
 	return erb :listing, locals: { path: @path, uri: @uri, title: @title, listing: get_listing(@path) }
 end
 

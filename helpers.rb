@@ -60,13 +60,26 @@ def previous_page
 end
 
 
-# [
-#     [dir1, [file1, file2]],
-#     [dir2, [file1, file2]],
-# ]
+# {
+#	dir1: {
+#		level: 2,
+#		fileS: [file1, file2],
+#	},
+#	dir2: {
+#		level: 2,
+#		fileS: [file1, file2],
+#	}
+# }
 def get_listing path
-	dirs = {path.gsub(/\/+/, '/').sub(/^#{PATH_DATA}/, '') => []}
+	dirs = {
+		path.gsub(/\/+/, '/').sub(/^#{PATH_DATA}/, '') => {
+			level: 0,
+			files: [],
+		}
+	}
 	files = []
+
+	last_dir = []
 	Dir.glob("#{path}/**/*").sort.each do |f|
 		if File.directory?(f)
 			# Dir.glob doesn't traverse symlinks :-(
@@ -77,12 +90,20 @@ def get_listing path
 			end
 
 			f = f.gsub(/\/+/, '/').sub(/^#{PATH_DATA}/, '')
-			dirs[f] = []
+			level = f.split('/')[1..-1]
+				.map.with_index { |part, i| last_dir[i] == part }
+				.compact.length
+			last_dir = f.split('/')[1..-1]
+
+			dirs[f] = {
+				level: level,
+				files: [],
+			}
 		elsif f.end_with?('.markdown') || f.end_with?('.md')
 			files << f.gsub(/\/+/, '/').sub(/^#{PATH_DATA}/, '')
 		end
 	end
-	files.each { |f| dirs[File.dirname(f)] << f }
+	files.each { |f| dirs[File.dirname(f)][:files] << f }
 
 	# Don't include the current dir if there are no files
 	p = path.gsub(/\/+/, '/').sub(/^#{PATH_DATA}/, '')
