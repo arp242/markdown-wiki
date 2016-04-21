@@ -59,7 +59,7 @@ Changelog
 TODO
 ----
 
-## For 1.0:
+### For 1.0:
 - Log/history/recent changes page could be a lot better...
 - File uploads.
 - Translations with gettext
@@ -71,7 +71,7 @@ TODO
   performance (?) But this won't search non-commited changes?
 - And finally ... list it here: `http://www.wikimatrix.org/wiki/become_a_maintainer`
 
-## Later:
+### Later:
 - More fine-grained access control; maybe some sort of glob pattern (or list of
   them) for each user.
 - Tags; we can do this by creating a dir for each tag, and then symlinking pages
