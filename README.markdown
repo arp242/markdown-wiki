@@ -1,19 +1,14 @@
 **markdown-wiki** or **mdwiki** is a basic wiki.
 
-Some features:
+Features:
 
 - Documents are written in markdown.
 - All documents are stored on the file system, you can edit them through the
   web interface, or directly on the file system with your editor of choice.
-- Version is tracked with a VCS; currently `hg` and `git` are supported.
+- Versions are tracked with a VCS; currently Mercurial and Git are supported.
 - It has a simple interface, no excessively ‘hip’ JS. It’s perfectly usable in
   `lynx`.
-- Less than 1000 lines of code, with a straightforward hackable design that
-  ‘just works’™.
-
-The author of the program uses it to keep track of TODO lists, recipes, personal
-documentation/cheatsheets on various things… You can use it for anything,
-really.
+- Lighter than DokuWiki!
 
 
 Installation
@@ -34,15 +29,17 @@ Markdown flavour
 [See the Kramdown docs](http://kramdown.gettalong.org/syntax.html). You can
 configure this in `config.rb` with `MARKDOWN_FLAVOUR`.
 
-Paths ending with `@` will get redirected to `.markdown`; ie.
-`[link](other_page@)`, this saves some typing for interwiki links (this is not
-a markdown extension, but just a HTTP redirect).
+Paths ending with `@` will get redirected to `.markdown`; e.g.
+`[link](/other_page@)` is the same as `[link](/other_page.markdown)` this saves
+some typing for wiki links.  
+This is not a markdown extension, but just a HTTP redirect.
 
 
 Editing documents on the file system
 -----------------------------------
 - Spaces are stored as an underscore (`_`).
-- Files must end with `.markdown` or `.md`; all other files are ignored.
+- Files must end with `.markdown` or `.md` to be editable; all other files are
+  treated as a data file.
 - You can use any pathname, but paths *cannot* begin with `special:` (case
   insensitive) or end with a `@`.
 
@@ -61,6 +58,7 @@ Changelog
 
 TODO
 ----
+
 ## For 1.0:
 - Log/history/recent changes page could be a lot better...
 - File uploads.
