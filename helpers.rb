@@ -112,9 +112,10 @@ def get_listing path
 	return dirs
 end
 
+
 # TODO: This fails for files that start with data
 def path_or_uri_to_title path
-	'/' + path
+	return '/' + path
 		.sub(/^#{PATH_DATA}\/?/, '')
 		.sub(/^[.\/]?data\/?/, '')
 		.sub(/^\/*/, '')

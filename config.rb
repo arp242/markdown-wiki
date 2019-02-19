@@ -15,9 +15,9 @@ PATH_DATA ||= "#{File.realpath(File.dirname($0))}/data"
 # User file
 PATH_USERS ||= "#{File.realpath(File.dirname($0))}/users"
 
-# Hg.new or Git.new
-# You can use Dummy.new to disable history
-VCS = [Hg.new, Git.new].select { |vcs| vcs.present? PATH_DATA }[0] || Hg.new
+# You can use Dummym, which is not a VCS and just stubs stuff out (you won't
+# have history).
+VCS = [Git.new, Hg.new, Dummy.new].select { |vcs| vcs.present? PATH_DATA }[0]
 
 # Which markdown flavour to use
 #
@@ -40,4 +40,5 @@ KRAMDOWN_OPTIONS = {
 	}
 }
 
-MIN_PASSWORD_SCORE = 4
+# Minimum password score needed for adduser.rb
+MIN_PASSWORD_SCORE = 3

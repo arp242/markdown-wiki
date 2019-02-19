@@ -227,18 +227,6 @@ put '/*' do
 end
 
 
-# Upload
-# TODO: Finish this
-post '/upload' do
-	tmpfile = params[:file][:tempfile]
-	name = params[:file][:filename]
-	FileIO.copy(tmpfile.path, "#{PATH_DATA}/../public/uploads/#{name}")
-
-	flash _('File ‘%{filename}’ uploaded.') % {filename: name}
-	redirect '/Special:upload'
-end
-
-
 # The MIT License (MIT)
 #
 # Copyright © 2014-2015 Martin Tournoij
