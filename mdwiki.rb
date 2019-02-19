@@ -64,10 +64,10 @@ get(/\/special:/i) do
 end
 
 # Redirect 'page.' to 'page.markdown' (allows for easier linking)
-get(%r{/.*@$}) { redirect "#{@uri[0..-2]}.markdown" }
+get(%r{/.*@}) { redirect "#{@uri[0..-2]}.markdown" }
 
 # Show markdown page
-get %r{/.*\.(markdown|md)$} do
+get %r{/.*\.(markdown|md)} do
 	markdown = html = ''
 	writable = true
 
@@ -92,14 +92,14 @@ end
 
 
 # Show logs
-get %r{/.*\.(markdown|md)\.log$} do
+get %r{/.*\.(markdown|md)\.log} do
 	@path = @path.sub(/\.log$/, '')
 	erb :log, locals: { path: @path, uri: @uri, title: @title, log: VCS.log(@uri.sub(/\.log$/, '')) }
 end
 
 
 # Create, edit, or move markdown page
-post %r{/.*\.(markdown|md)$} do
+post %r{/.*\.(markdown|md)} do
 	# Move page
 	if params['mv-page']
 		if params['new-name'].strip == ''
@@ -158,7 +158,7 @@ end
 
 
 # Delete markdown page
-delete %r{/.*\.(markdown|md)$} do
+delete %r{/.*\.(markdown|md)} do
 	begin
 		FileIO::unlink @path
 	rescue FileIO::Error => exc
