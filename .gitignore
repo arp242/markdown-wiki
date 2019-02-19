@@ -1,0 +1,9 @@
+/vendor
+/.bundle/config 
+/.sass-cache
+
+/users
+
+/data
+
+/public/*.map
